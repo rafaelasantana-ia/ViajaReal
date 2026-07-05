@@ -1,0 +1,122 @@
+"""Exemplos de dados mockados para simular busca de destinos, relatos e cadastros futuros."""
+
+MOCK_DESTINATIONS = {
+    "lisboa": {
+        "name": "Lisboa",
+        "country": "Portugal",
+        "region": "Europa",
+        "summary": "Lisboa combina clima agradável, gastronomia variada e bairros cheios de história.",
+        "climate": "Clima ameno, com temperaturas médias de 18°C a 28°C.",
+        "events": ["Festival de Lisboa", "Feira de gastronomia no verão"],
+        "attractions": ["Torre de Belém", "Alfama", "LX Factory"],
+        "local_transport": "Metrô, comboios e ônibus eficientes.",
+        "safety": "Considerada segura para turismo urbano.",
+        "price_average": "R$ 380/dia",
+        "recent_news": ["Novas rotas de trem regional", "Bairros costeiros ganharam novos espaços culturais"],
+        "recommended_places": ["Alfama", "Belém", "Chiado"],
+        "ideal_traveler": "Casal ou dupla que gosta de cultura, gastronomia e passeios leves.",
+    },
+    "bali": {
+        "name": "Bali",
+        "country": "Indonésia",
+        "region": "Ásia",
+        "summary": "Bali é forte para descanso, praias, wellness e experiências de natureza.",
+        "climate": "Tropical, com calor e estações secas e chuvosas.",
+        "events": ["Festival de música e beach club", "Temporada de surf"],
+        "attractions": ["Ubud", "Uluwatu", "Canggu"],
+        "local_transport": "Motoristas locais, scooters e transporte privado são comuns.",
+        "safety": "Segurança moderada, com atenção ao trânsito e zonas isoladas.",
+        "price_average": "R$ 300/dia",
+        "recent_news": ["Mais resorts com foco em wellness", "Aumento de voos regionais"],
+        "recommended_places": ["Ubud", "Canggu", "Uluwatu"],
+        "ideal_traveler": "Solo ou casal buscando relaxamento, praias e cultura espiritual.",
+    },
+    "marrakech": {
+        "name": "Marrakech",
+        "country": "Marrocos",
+        "region": "África",
+        "summary": "Marrakech é intensa, cultural e excelente para explorar mercados e arquitetura.",
+        "climate": "Quente e seco, com dias quentes e noites agradáveis.",
+        "events": ["Festa do Ramadan", "Feira artesanal local"],
+        "attractions": ["Medina", "Jardim Majorelle", "Souk"],
+        "local_transport": "Transporte local variado, com atenção para deslocamentos longos.",
+        "safety": "Segurança moderada, com mais atenção em áreas lotadas.",
+        "price_average": "R$ 260/dia",
+        "recent_news": ["Novos circuitos culturais na medina", "Mais opções de hospedagem boutique"],
+        "recommended_places": ["Medina", "Jardim Majorelle", "Gueliz"],
+        "ideal_traveler": "Família ou grupo que busca cultura e experiência imersiva.",
+    },
+}
+
+MOCK_USER_REPORTS = [
+    {
+        "title": "Fim de semana em Lisboa",
+        "destination": "Lisboa",
+        "travel_type": "casal",
+        "budget_level": "médio",
+        "duration_days": 4,
+        "interests": ["cultura", "gastronomia"],
+        "rating": 4.8,
+        "cost_breakdown": {
+            "food": 240,
+            "transport": 120,
+            "lodging": 420,
+            "activities": 180,
+            "shopping": 80,
+            "others": 50,
+        },
+        "summary": "Ótima experiência urbana com boa gastronomia e fácil deslocamento.",
+        "locations": ["Alfama", "Belém", "Chiado"],
+    },
+    {
+        "title": "Descanso em Bali",
+        "destination": "Bali",
+        "travel_type": "solo",
+        "budget_level": "médio",
+        "duration_days": 7,
+        "interests": ["praia", "descanso"],
+        "rating": 4.6,
+        "cost_breakdown": {
+            "food": 180,
+            "transport": 90,
+            "lodging": 420,
+            "activities": 140,
+            "shopping": 60,
+            "others": 40,
+        },
+        "summary": "Destino leve para descanso com praias e cultura.",
+        "locations": ["Ubud", "Canggu", "Uluwatu"],
+    },
+]
+
+MOCK_REPORT_EXAMPLES = [
+    {
+        "title": "Relato com dados incompletos",
+        "destination": "Lisboa",
+        "travel_type": "familia",
+        "budget_level": "alto",
+        "duration_days": 5,
+        "interests": ["cultura"],
+        "rating": 4.2,
+        "cost_breakdown": {
+            "food": 300,
+            "transport": 90,
+            "lodging": 650,
+            "activities": 200,
+            "shopping": 0,
+            "others": 0,
+        },
+        "summary": "Relato sem confirmação de alguns locais citados.",
+        "locations": ["Alfama", "Praça do Comércio"],
+    }
+]
+
+MOCK_TRAVEL_PREFERENCES = {
+    "travel_type": "casal",
+    "budget": "médio",
+    "duration": "5 dias",
+    "interests": ["cultura", "gastronomia"],
+    "comfort": "médio",
+    "accessible": True,
+    "safe": True,
+}

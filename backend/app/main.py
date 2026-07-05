@@ -6,6 +6,14 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from app.services.expenses_service import calculate_trip_expenses
+from app.services.external_info_service import get_public_destination_info
+from app.services.maps_service import build_map_markers, get_mock_location_coordinates
+from app.services.mock_examples import MOCK_REPORT_EXAMPLES, MOCK_TRAVEL_PREFERENCES
+from app.services.reports_service import filter_user_reports
+from app.services.summary_service import generate_destination_summary
+from app.services.validation_service import validate_report
+
 DB_PATH = Path(__file__).resolve().parent / "viajareal.db"
 
 app = FastAPI(
@@ -57,6 +65,18 @@ class InsightResponse(BaseModel):
 class AlertResponse(BaseModel):
     level: str
     message: str
+
+
+class ExpenseBreakdownResponse(BaseModel):
+    food: float
+    transport: float
+    lodging: float
+    activities: float
+    shopping: float
+    others: float
+    total: float
+    average_per_day: float
+    currency: str
 
 
 class StatsResponse(BaseModel):
@@ -303,3 +323,85 @@ def destination_alerts(destination: str = Query(..., description="Nome do destin
         raise HTTPException(status_code=404, detail="Destino não encontrado.")
 
     return alerts[destination]
+
+
+@app.get("/future-services/external-info", summary="Dados públicos mockados de um destino", description="Retorna informações externas mockadas para um destino, prontas para integração real.")
+def future_external_info(destination: str = Query(..., description="Nome do destino"), preferences: str | None = None):
+    parsed_preferences = {}
+    if preferences:
+        parsed_preferences = {item.split(":", 1)[0]: item.split(":", 1)[1] for item in preferences.split(",") if ":" in item}
+    return get_public_destination_info(destination, preferences=parsed_preferences)
+
+
+@app.get("/future-services/reports", summary="Relatos filtrados mockados", description="Retorna relatos mockados filtrados por perfil e destino.")
+def future_reports(
+    destination: str | None = None,
+    travel_type: str | None = None,
+    budget_level: str | None = None,
+    duration_days: int | None = None,
+    interests: str | None = None,
+    minimum_rating: float = 0.0,
+):
+    parsed_interests = [item.strip() for item in interests.split(",") if item.strip()] if interests else None
+    return filter_user_reports(
+        destination=destination,
+        travel_type=travel_type,
+        budget_level=budget_level,
+        duration_days=duration_days,
+        interests=parsed_interests,
+        minimum_rating=minimum_rating,
+    )
+
+
+@app.post("/future-services/expenses", response_model=ExpenseBreakdownResponse, summary="Cálculo de gastos mockado", description="Calcula gastos da viagem e custo médio por dia.")
+def future_expenses(payload: dict):
+    return calculate_trip_expenses(payload)
+
+
+@app.post("/future-services/summary", summary="Resumo inteligente mockado", description="Gera um resumo inteligente baseado em relatos, preferências e dados externos.")
+def future_summary(payload: dict):
+    reports = payload.get("reports", [])
+    preferences = payload.get("preferences", MOCK_TRAVEL_PREFERENCES)
+    external_info = payload.get("external_info", {})
+    return generate_destination_summary(reports, preferences, external_info)
+
+
+@app.post("/future-services/validate-report", summary="Validação mockada de relato", description="Valida um relato e marca campos não verificados.")
+def future_validate_report(payload: dict):
+    return validate_report(payload)
+
+
+@app.get("/future-services/map-coordinates", summary="Coordenadas mockadas de local", description="Retorna latitude e longitude mockadas para um nome de local.")
+def future_map_coordinates(location: str = Query(..., description="Nome do local")):
+    return get_mock_location_coordinates(location)
+
+
+@app.post("/future-services/map-markers", summary="Marcadores mockados para o mapa", description="Gera marcadores mockados para um conjunto de locais.")
+def future_map_markers(payload: dict):
+    locations = payload.get("locations", [])
+    return build_map_markers(locations)
+
+
+@app.get("/future-services/mock-examples", summary="Exemplos mockados", description="Retorna exemplos prontos para testar a tela de busca e cadastro de relatos.")
+def future_mock_examples():
+    return {
+        "destinations": [
+            {
+                "name": "Lisboa",
+                "summary": "Cultural, gastronômico e com boa infraestrutura.",
+                "price_average": "R$ 380/dia",
+            },
+            {
+                "name": "Bali",
+                "summary": "Praias, natureza e descanso.",
+                "price_average": "R$ 300/dia",
+            },
+            {
+                "name": "Marrakech",
+                "summary": "Mercados, cultura e experiência imersiva.",
+                "price_average": "R$ 260/dia",
+            },
+        ],
+        "reports": MOCK_REPORT_EXAMPLES,
+        "preferences": MOCK_TRAVEL_PREFERENCES,
+    }

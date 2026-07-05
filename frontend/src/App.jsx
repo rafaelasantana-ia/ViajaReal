@@ -11,6 +11,145 @@ const mockInsights = [
   { title: 'Mais econômica', text: 'Marrakech é ideal para quem quer uma experiência cultural com investimento mais baixo.' },
 ];
 
+const mockDestinationProfiles = [
+  {
+    id: 'lisboa',
+    name: 'Lisboa',
+    country: 'Portugal',
+    region: 'Europa',
+    summary: 'Lisboa combina clima agradável, boa infraestrutura, gastronomia forte e bairros cheios de história, sendo excelente para viagens curtas e médias.',
+    averageCost: 'R$ 380/dia',
+    positives: ['Boa conexão com transporte público', 'Restaurantes variados', 'Bairros com muito charme'],
+    attentionPoints: ['Preços mais altos em áreas centrais', 'Algumas regiões podem ficar lotadas no verão'],
+    recommendedPlaces: ['Alfama', 'Belém', 'LX Factory', 'Parque das Nações'],
+    idealTraveler: 'Casal ou dupla que busca cultura, gastronomia e passeio urbano com conforto moderado.',
+    itinerary: ['Dia 1: Alfama e miradouros', 'Dia 2: Belém e culinária', 'Dia 3: bairro moderno e descanso'],
+    tip: 'Reserve hospedagem próxima ao metrô para economizar tempo e transporte.',
+    rating: 4.8,
+    safety: 'Alta',
+    transit: 'Excelente',
+    stay: 'R$ 220/noite',
+    budget: 'Médio',
+    comparison: { lodging: 320, food: 190, transport: 120, safety: 85 },
+    reportRows: [
+      { category: 'Hospedagem', value: 'R$ 220/noite' },
+      { category: 'Alimentação', value: 'R$ 70/dia' },
+      { category: 'Transporte', value: 'R$ 35/dia' },
+    ],
+    stories: [
+      { title: 'Férias casuais em Lisboa', rating: 4.9, cost: 'R$ 860', travelType: 'Casal', summary: 'Passeamos muito a pé, visitamos mirantes e comemos bem por bairros pequenos.', actionLabel: 'Ver relato completo' },
+      { title: 'Fim de semana gastronômico', rating: 4.7, cost: 'R$ 720', travelType: 'Amigos', summary: 'Ótimo para comer bem, conhecer cafés e fazer passeios leves.', actionLabel: 'Ver relato completo' },
+    ],
+    mapMarkers: [
+      { label: 'Restaurante', type: 'restaurante', position: 'Centro' },
+      { label: 'Ponto turístico', type: 'ponto', position: 'Belém' },
+      { label: 'Hospedagem', type: 'hospedagem', position: 'Chiado' },
+    ],
+  },
+  {
+    id: 'bali',
+    name: 'Bali',
+    country: 'Indonésia',
+    region: 'Ásia',
+    summary: 'Bali é ideal para quem busca relaxamento, praias, espiritualidade, natureza e experiência de estilo de vida mais leve.',
+    averageCost: 'R$ 300/dia',
+    positives: ['Belezas naturais', 'Boa oferta de resorts', 'Excelente para descanso'],
+    attentionPoints: ['Distâncias entre regiões podem ser grandes', 'Alguns trechos exigem planejamento'],
+    recommendedPlaces: ['Ubud', 'Canggu', 'Uluwatu', 'Seminyak'],
+    idealTraveler: 'Viajante solo ou casal que deseja descanso e um mix de surf, cultura e wellness.',
+    itinerary: ['Dia 1: Ubud e templos', 'Dia 2: praia e sunset', 'Dia 3: spa e culinária local'],
+    tip: 'Combine uma base em Ubud com um fim de semana em Canggu para equilibrar paz e vida noturna.',
+    rating: 4.6,
+    safety: 'Moderada',
+    transit: 'Boa',
+    stay: 'R$ 180/noite',
+    budget: 'Médio',
+    comparison: { lodging: 250, food: 140, transport: 95, safety: 70 },
+    reportRows: [
+      { category: 'Hospedagem', value: 'R$ 180/noite' },
+      { category: 'Alimentação', value: 'R$ 55/dia' },
+      { category: 'Transporte', value: 'R$ 25/dia' },
+    ],
+    stories: [
+      { title: 'Ritmo relaxado em Bali', rating: 4.8, cost: 'R$ 640', travelType: 'Solo', summary: 'Fui para descanso, fiz trilhas e fiquei encantada com as praias.', actionLabel: 'Ver relato completo' },
+      { title: 'Semana econômica com wellness', rating: 4.5, cost: 'R$ 700', travelType: 'Casal', summary: 'Ótimo custo-benefício para quem quer spa, cafés e praias.', actionLabel: 'Ver relato completo' },
+    ],
+    mapMarkers: [
+      { label: 'Praia', type: 'ponto', position: 'Uluwatu' },
+      { label: 'Hospedagem', type: 'hospedagem', position: 'Ubud' },
+      { label: 'Restaurante', type: 'restaurante', position: 'Canggu' },
+    ],
+  },
+  {
+    id: 'marrakech',
+    name: 'Marrakech',
+    country: 'Marrocos',
+    region: 'África',
+    summary: 'Marrakech é perfeita para quem gosta de cultura intensa, mercados, arquitetura e viagens mais imersivas.',
+    averageCost: 'R$ 260/dia',
+    positives: ['Cultura rica', 'Mercados e artesanato', 'Boa experiência para quem gosta de explorar'],
+    attentionPoints: ['Clima quente', 'Trânsito e aglomeração', 'Planejamento de transporte local'],
+    recommendedPlaces: ['Medina', 'Jardim Majorelle', 'Souk', 'Palácio da Bahia'],
+    idealTraveler: 'Viajante de aventura, cultura e economia, especialmente para famílias ou grupos.',
+    itinerary: ['Dia 1: Medina e souks', 'Dia 2: jardins e café', 'Dia 3: passeio no atardecer'],
+    tip: 'Use um guia local em parte do percurso para aproveitar melhor os mercados e a cultura.',
+    rating: 4.5,
+    safety: 'Moderada',
+    transit: 'Boa',
+    stay: 'R$ 150/noite',
+    budget: 'Baixo',
+    comparison: { lodging: 200, food: 110, transport: 85, safety: 68 },
+    reportRows: [
+      { category: 'Hospedagem', value: 'R$ 150/noite' },
+      { category: 'Alimentação', value: 'R$ 40/dia' },
+      { category: 'Transporte', value: 'R$ 20/dia' },
+    ],
+    stories: [
+      { title: 'Explorando a Medina', rating: 4.6, cost: 'R$ 620', travelType: 'Família', summary: 'A experiência foi intensa, com muita comida e mercados fascinantes.', actionLabel: 'Ver relato completo' },
+      { title: 'Viagem econômica e cultural', rating: 4.4, cost: 'R$ 560', travelType: 'Economia', summary: 'Bom destino para investir pouco e viver uma experiência forte.', actionLabel: 'Ver relato completo' },
+    ],
+    mapMarkers: [
+      { label: 'Mercado', type: 'ponto', position: 'Medina' },
+      { label: 'Hospedagem', type: 'hospedagem', position: 'Gueliz' },
+      { label: 'Restaurante', type: 'restaurante', position: 'Jemaa el-Fnaa' },
+    ],
+  },
+  {
+    id: 'toquio',
+    name: 'Tóquio',
+    country: 'Japão',
+    region: 'Ásia',
+    summary: 'Tóquio combina tecnologia, segurança, gastronomia e bairros muito diferentes entre si, ideal para quem quer organização e variedade.',
+    averageCost: 'R$ 520/dia',
+    positives: ['Segurança alta', 'Transporte eficiente', 'Cultura e comida muito ricas'],
+    attentionPoints: ['Custo mais alto', 'Planejamento de reservas', 'Idioma local pode ser um desafio'],
+    recommendedPlaces: ['Shibuya', 'Asakusa', 'Harajuku', 'Akihabara'],
+    idealTraveler: 'Viajante que valoriza conforto, segurança e uma experiência urbana muito bem estruturada.',
+    itinerary: ['Dia 1: Shibuya e Harajuku', 'Dia 2: Asakusa e templos', 'Dia 3: Akihabara e descanso'],
+    tip: 'Aproveite o transporte ferroviário e prefira bairros bem conectados para reduzir deslocamentos.',
+    rating: 4.9,
+    safety: 'Alta',
+    transit: 'Excelente',
+    stay: 'R$ 280/noite',
+    budget: 'Alto',
+    comparison: { lodging: 360, food: 220, transport: 140, safety: 90 },
+    reportRows: [
+      { category: 'Hospedagem', value: 'R$ 280/noite' },
+      { category: 'Alimentação', value: 'R$ 90/dia' },
+      { category: 'Transporte', value: 'R$ 45/dia' },
+    ],
+    stories: [
+      { title: 'Viagem tecnológica e confortável', rating: 4.9, cost: 'R$ 1.100', travelType: 'Trabalho', summary: 'Ótimo para quem quer eficiência, segurança e boa experiência urbana.', actionLabel: 'Ver relato completo' },
+      { title: 'Semana em Tóquio com cultura', rating: 4.8, cost: 'R$ 980', travelType: 'Solo', summary: 'Muito fácil de circular e com bairros que oferecem experiências bem diferentes.', actionLabel: 'Ver relato completo' },
+    ],
+    mapMarkers: [
+      { label: 'Restaurante', type: 'restaurante', position: 'Shibuya' },
+      { label: 'Ponto turístico', type: 'ponto', position: 'Asakusa' },
+      { label: 'Hospedagem', type: 'hospedagem', position: 'Shinjuku' },
+    ],
+  },
+];
+
 async function fetchWithFallback(path) {
   let lastError;
 
@@ -61,6 +200,17 @@ function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchPreferences, setSearchPreferences] = useState({
+    travelType: 'solo',
+    budget: 'médio',
+    duration: '5 dias',
+    interests: ['praia', 'natureza'],
+    comfort: 'médio',
+    accessible: true,
+    safe: true,
+  });
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [reports, setReports] = useState([]);
   const [comparisonA, setComparisonA] = useState('');
   const [comparisonB, setComparisonB] = useState('');
@@ -154,18 +304,63 @@ function App() {
   }, [selectedDestination]);
 
   const filteredDestinations = useMemo(() => {
-    return destinations.filter((destination) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        destination.name.toLowerCase().includes(query) ||
-        destination.country.toLowerCase().includes(query) ||
-        (destination.tags || []).some((tag) => tag.toLowerCase().includes(query))
-      );
+    const query = searchQuery.toLowerCase();
+    return mockDestinationProfiles.filter((destination) => {
+      const haystack = `${destination.name} ${destination.country} ${destination.region} ${destination.summary}`.toLowerCase();
+      return haystack.includes(query);
     });
-  }, [destinations, searchQuery]);
+  }, [searchQuery]);
 
   const destinationA = destinations.find((item) => item.id === comparisonA) || destinations[0];
   const destinationB = destinations.find((item) => item.id === comparisonB) || destinations[1];
+
+  const handleInterestToggle = (interest) => {
+    setSearchPreferences((current) => ({
+      ...current,
+      interests: current.interests.includes(interest)
+        ? current.interests.filter((item) => item !== interest)
+        : [...current.interests, interest],
+    }));
+  };
+
+  const handleGenerateSuggestion = (event) => {
+    event.preventDefault();
+    setSearchLoading(true);
+
+    window.setTimeout(() => {
+      const query = searchQuery.trim().toLowerCase();
+      const scoredResults = mockDestinationProfiles
+        .map((destination) => {
+          let score = 0;
+          const haystack = `${destination.name} ${destination.country} ${destination.region} ${destination.summary}`.toLowerCase();
+          if (query && haystack.includes(query)) {
+            score += 5;
+          }
+          if (searchPreferences.interests.some((interest) => destination.summary.toLowerCase().includes(interest))) {
+            score += 3;
+          }
+          if (searchPreferences.budget === destination.budget.toLowerCase()) {
+            score += 3;
+          }
+          if (searchPreferences.travelType === 'economica' && destination.budget === 'Baixo') {
+            score += 2;
+          }
+          if (searchPreferences.safe && destination.safety === 'Alta') {
+            score += 2;
+          }
+          if (searchPreferences.accessible && destination.transit === 'Excelente') {
+            score += 2;
+          }
+          return { ...destination, score };
+        })
+        .sort((first, second) => second.score - first.score);
+
+      const recommendation = scoredResults[0] || mockDestinationProfiles[0];
+      setSearchResult(recommendation);
+      setSelectedDestination(recommendation);
+      setSearchLoading(false);
+    }, 900);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -318,37 +513,228 @@ function App() {
 
   const renderSearch = () => (
     <div className="page-grid">
-      <section className="card">
-        <div className="section-header">
-          <h3>Buscar destino</h3>
-          <input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Busque por cidade, país ou tema"
-          />
+      <section className="card hero-card">
+        <div>
+          <p className="eyebrow">Buscar destino</p>
+          <h3>Encontre um local com base em relatos, preferências e comportamento de viajantes</h3>
+          <p>Os resultados abaixo são mockados, mas a lógica já foi organizada para evoluir para uma recomendação com IA.</p>
         </div>
-        <div className="destination-grid">
-          {filteredDestinations.length === 0 ? (
-            <p>Nenhum destino encontrado para a busca.</p>
-          ) : filteredDestinations.map((destination) => (
-            <article key={destination.id} className="destination-card">
-              <div className="destination-top">
-                <h4>{destination.name}</h4>
-                <span className="chip">{destination.region}</span>
-              </div>
-              <p>{destination.country}</p>
-              <p>{destination.report}</p>
+        <div className="metric-pill">Sugestão simulada · IA futura</div>
+      </section>
+
+      <section className="search-layout">
+        <div className="card search-panel">
+          <div className="section-header">
+            <h4>Perfil de busca</h4>
+            <span className="chip">Mockado</span>
+          </div>
+          <form className="search-form" onSubmit={handleGenerateSuggestion}>
+            <label className="full-width">
+              Para onde você quer viajar?
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Ex.: Lisboa, praia, natureza ou cultura"
+              />
+            </label>
+
+            <div className="suggestion-list">
+              {filteredDestinations.slice(0, 4).map((destination) => (
+                <button type="button" key={destination.id} className="suggestion-pill" onClick={() => setSearchQuery(destination.name)}>
+                  {destination.name} · {destination.country}
+                </button>
+              ))}
+            </div>
+
+            <div className="filter-grid">
+              <label>
+                Tipo de viagem
+                <select value={searchPreferences.travelType} onChange={(event) => setSearchPreferences({ ...searchPreferences, travelType: event.target.value })}>
+                  <option value="solo">Solo</option>
+                  <option value="casal">Casal</option>
+                  <option value="familia">Família</option>
+                  <option value="amigos">Amigos</option>
+                  <option value="trabalho">Trabalho</option>
+                  <option value="economica">Econômica</option>
+                  <option value="aventura">Aventura</option>
+                </select>
+              </label>
+
+              <label>
+                Faixa de orçamento
+                <select value={searchPreferences.budget} onChange={(event) => setSearchPreferences({ ...searchPreferences, budget: event.target.value })}>
+                  <option value="baixo">Baixo</option>
+                  <option value="médio">Médio</option>
+                  <option value="alto">Alto</option>
+                </select>
+              </label>
+
+              <label>
+                Duração estimada
+                <select value={searchPreferences.duration} onChange={(event) => setSearchPreferences({ ...searchPreferences, duration: event.target.value })}>
+                  <option value="3 dias">3 dias</option>
+                  <option value="5 dias">5 dias</option>
+                  <option value="7 dias">7 dias</option>
+                  <option value="10 dias">10 dias</option>
+                </select>
+              </label>
+
+              <label>
+                Nível de conforto
+                <select value={searchPreferences.comfort} onChange={(event) => setSearchPreferences({ ...searchPreferences, comfort: event.target.value })}>
+                  <option value="simples">Simples</option>
+                  <option value="médio">Médio</option>
+                  <option value="alto">Alto</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="filter-section">
+              <p className="helper-text">Interesses</p>
               <div className="tag-row">
-                {destination.tags.map((tag) => (
-                  <span key={tag} className="tag">{tag}</span>
+                {['praia', 'natureza', 'gastronomia', 'cultura', 'compras', 'vida noturna', 'trilhas', 'descanso'].map((interest) => (
+                  <button key={interest} type="button" className={searchPreferences.interests.includes(interest) ? 'tag active-tag' : 'tag'} onClick={() => handleInterestToggle(interest)}>
+                    {interest}
+                  </button>
                 ))}
               </div>
-              <div className="card-footer">
-                <span>Orçamento: {destination.budget}</span>
-                <button onClick={() => { setSelectedDestination(destination); setActiveView('details'); }}>Ver detalhes</button>
+            </div>
+
+            <div className="toggle-row">
+              <label className="checkbox-label">
+                <input type="checkbox" checked={searchPreferences.accessible} onChange={(event) => setSearchPreferences({ ...searchPreferences, accessible: event.target.checked })} />
+                Destino acessível
+              </label>
+              <label className="checkbox-label">
+                <input type="checkbox" checked={searchPreferences.safe} onChange={(event) => setSearchPreferences({ ...searchPreferences, safe: event.target.checked })} />
+                Destino seguro
+              </label>
+            </div>
+
+            <button type="submit" className="primary-btn">Gerar sugestão</button>
+          </form>
+        </div>
+
+        <div className="card result-panel">
+          {searchLoading ? (
+            <div className="loading-state">
+              <div className="loading-spinner" />
+              <p>Gerando sugestão personalizada...</p>
+              <span>Estamos analisando relatos mockados, preferências e padrões de recomendação.</span>
+            </div>
+          ) : searchResult ? (
+            <>
+              <div className="section-header">
+                <div>
+                  <p className="eyebrow">Resumo Inteligente do Destino</p>
+                  <h4>{searchResult.name}, {searchResult.country}</h4>
+                </div>
+                <div className="metric-pill">{searchResult.averageCost}</div>
               </div>
-            </article>
-          ))}
+
+              <div className="summary-box">
+                <h5>Resumo geral</h5>
+                <p>{searchResult.summary}</p>
+              </div>
+
+              <div className="insight-grid">
+                <article className="insight-card">
+                  <h5>Média de gastos</h5>
+                  <p>{searchResult.averageCost}</p>
+                </article>
+                <article className="insight-card">
+                  <h5>Pontos positivos</h5>
+                  <ul>
+                    {searchResult.positives.map((positive) => <li key={positive}>{positive}</li>)}
+                  </ul>
+                </article>
+                <article className="insight-card">
+                  <h5>Pontos de atenção</h5>
+                  <ul>
+                    {searchResult.attentionPoints.map((point) => <li key={point}>{point}</li>)}
+                  </ul>
+                </article>
+              </div>
+
+              <div className="summary-box">
+                <h5>Lugares mais recomendados</h5>
+                <p>{searchResult.recommendedPlaces.join(' • ')}</p>
+              </div>
+
+              <div className="summary-box">
+                <h5>Melhor perfil de viajante</h5>
+                <p>{searchResult.idealTraveler}</p>
+              </div>
+
+              <div className="summary-box">
+                <h5>Roteiro simples</h5>
+                <ul>
+                  {searchResult.itinerary.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </div>
+
+              <div className="summary-box">
+                <h5>Dica final personalizada</h5>
+                <p>{searchResult.tip}</p>
+              </div>
+
+              <div className="card-footer">
+                <span>Baseado em relatos mockados e preferências do perfil</span>
+                <button onClick={() => { setSelectedDestination(searchResult); setActiveView('details'); }}>Ver detalhes</button>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <h4>Nenhuma sugestão gerada ainda</h4>
+              <p>Defina seus filtros e clique em “Gerar sugestão” para ver um resumo inicial do destino.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-header">
+          <h4>Relatos encontrados</h4>
+          <span className="chip">{searchResult?.stories?.length ? `${searchResult.stories.length} relatos` : 'Sem relatos'}</span>
+        </div>
+        {searchResult?.stories?.length ? (
+          <div className="destination-grid">
+            {searchResult.stories.map((story) => (
+              <article key={story.title} className="destination-card">
+                <div className="destination-top">
+                  <h5>{story.title}</h5>
+                  <span className="chip">⭐ {story.rating}</span>
+                </div>
+                <p><strong>Custo:</strong> {story.cost}</p>
+                <p><strong>Tipo:</strong> {story.travelType}</p>
+                <p>{story.summary}</p>
+                <div className="card-footer">
+                  <span>Relato mockado</span>
+                  <button type="button" className="ghost-btn">{story.actionLabel}</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <p>Nenhum relato encontrado para o filtro atual. Experimente outra combinação de preferências.</p>
+          </div>
+        )}
+      </section>
+
+      <section className="card">
+        <div className="section-header">
+          <h4>Mapa mockado</h4>
+          <span className="chip">Marcadores simulados</span>
+        </div>
+        <div className="map-box search-map">
+          <div className="map-pin" />
+          <p>{searchResult ? `${searchResult.name} · ${searchResult.country}` : 'Selecione um destino para visualizar os pontos destacados'}</p>
+          <div className="map-marker-list">
+            {(searchResult?.mapMarkers || []).map((marker) => (
+              <span key={`${marker.label}-${marker.position}`} className="tag">{marker.label} · {marker.position}</span>
+            ))}
+          </div>
         </div>
       </section>
     </div>
