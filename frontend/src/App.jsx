@@ -61,10 +61,42 @@ function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [formData, setFormData] = useState({ title: '', destination: '', cost: '', safety: 'Boa', note: '' });
   const [reports, setReports] = useState([]);
   const [comparisonA, setComparisonA] = useState('');
   const [comparisonB, setComparisonB] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    destination: '',
+    city: '',
+    region: '',
+    startDate: '',
+    endDate: '',
+    travelType: 'lazer',
+    food: '',
+    transport: '',
+    lodging: '',
+    activities: '',
+    shopping: '',
+    others: '',
+    total: '',
+    experience: '',
+    tips: '',
+    positives: '',
+    negatives: '',
+    recommendedPlaces: '',
+    avoidPlaces: '',
+    safetyNotes: '',
+    generalRate: '5',
+    safetyRate: '5',
+    costRate: '5',
+    transportRate: '5',
+    foodRate: '5',
+    recommendDestination: true,
+    latitude: '-8.0476',
+    longitude: '-34.8770',
+    photos: ['https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'],
+  });
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -137,25 +169,94 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const requiredFields = [formData.title, formData.destination, formData.city, formData.region, formData.startDate, formData.endDate, formData.experience];
+    if (requiredFields.some((field) => !field || String(field).trim() === '')) {
+      setFormError('Preencha os campos obrigatórios destacados para salvar o relato.');
+      return;
+    }
+
+    const values = [
+      Number(formData.food || 0),
+      Number(formData.transport || 0),
+      Number(formData.lodging || 0),
+      Number(formData.activities || 0),
+      Number(formData.shopping || 0),
+      Number(formData.others || 0),
+    ];
+    const total = values.reduce((accumulator, value) => accumulator + value, 0);
+
     const newReport = {
-      title: formData.title || 'Relato anônimo',
-      destination: formData.destination || 'Destino não informado',
-      cost: formData.cost || 'R$ 0',
-      safety: formData.safety,
-      story: formData.note,
+      title: formData.title,
+      destination: `${formData.destination}, ${formData.city}`,
+      cost: `R$ ${total.toLocaleString('pt-BR')}`,
+      safety: formData.safetyRate >= 4 ? 'Alta' : 'Moderada',
+      story: formData.experience,
+      note: formData.experience,
+      aiPreview: {
+        summary: `Relato de ${formData.destination} com foco em ${formData.travelType}.`,
+        positives: formData.positives,
+        negatives: formData.negatives,
+        profile: formData.travelType,
+      },
     };
 
     try {
       await postWithFallback('/stories', newReport);
-      setReports((prev) => [{ ...newReport, note: newReport.story }, ...prev]);
-      setFormData({ title: '', destination: '', cost: '', safety: 'Boa', note: '' });
+      setReports((prev) => [newReport, ...prev]);
+      setFormData({
+        title: '',
+        destination: '',
+        city: '',
+        region: '',
+        startDate: '',
+        endDate: '',
+        travelType: 'lazer',
+        food: '',
+        transport: '',
+        lodging: '',
+        activities: '',
+        shopping: '',
+        others: '',
+        total: '',
+        experience: '',
+        tips: '',
+        positives: '',
+        negatives: '',
+        recommendedPlaces: '',
+        avoidPlaces: '',
+        safetyNotes: '',
+        generalRate: '5',
+        safetyRate: '5',
+        costRate: '5',
+        transportRate: '5',
+        foodRate: '5',
+        recommendDestination: true,
+        latitude: '-8.0476',
+        longitude: '-34.8770',
+        photos: ['https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'],
+      });
+      setFormError('');
       setActiveView('dashboard');
     } catch (error) {
-      setReports((prev) => [{ ...newReport, note: newReport.story }, ...prev]);
-      setFormData({ title: '', destination: '', cost: '', safety: 'Boa', note: '' });
+      setReports((prev) => [newReport, ...prev]);
+      setFormError('');
       setActiveView('dashboard');
     }
   };
+
+  useEffect(() => {
+    const values = [
+      Number(formData.food || 0),
+      Number(formData.transport || 0),
+      Number(formData.lodging || 0),
+      Number(formData.activities || 0),
+      Number(formData.shopping || 0),
+      Number(formData.others || 0),
+    ];
+    const total = values.reduce((accumulator, value) => accumulator + value, 0);
+    setFormData((current) => ({ ...current, total: total.toString() }));
+  }, [formData.food, formData.transport, formData.lodging, formData.activities, formData.shopping, formData.others]);
 
   const renderDashboard = () => (
     <div className="page-grid">
@@ -314,34 +415,137 @@ function App() {
   const renderForm = () => (
     <div className="page-grid">
       <section className="card">
-        <h3>Adicionar relato anônimo</h3>
-        <p>Seu relato ajuda outros viajantes a entender melhor custos e riscos.</p>
+        <div className="section-header">
+          <div>
+            <p className="eyebrow">Adicionar relato de viagem</p>
+            <h3>Conte sua experiência de forma detalhada</h3>
+          </div>
+          <div className="metric-pill">Mockado para futura integração com IA</div>
+        </div>
+        <p className="helper-text">Essas informações vão alimentar um resumo inteligente, sugestões e comparativos futuros.</p>
+        {formError ? <p className="error-text">{formError}</p> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
-          <label>
-            Título
-            <input value={formData.title} onChange={(event) => setFormData({ ...formData, title: event.target.value })} placeholder="Ex.: Hostel bem localizado" required />
-          </label>
-          <label>
-            Destino
-            <input value={formData.destination} onChange={(event) => setFormData({ ...formData, destination: event.target.value })} placeholder="Ex.: Lisboa" required />
-          </label>
-          <label>
-            Custo estimado
-            <input value={formData.cost} onChange={(event) => setFormData({ ...formData, cost: event.target.value })} placeholder="Ex.: R$ 180/noite" required />
-          </label>
-          <label>
-            Segurança
-            <select value={formData.safety} onChange={(event) => setFormData({ ...formData, safety: event.target.value })}>
-              <option value="Boa">Boa</option>
-              <option value="Moderada">Moderada</option>
-              <option value="Alta">Alta</option>
-            </select>
-          </label>
-          <label className="full-width">
-            Relato
-            <textarea value={formData.note} onChange={(event) => setFormData({ ...formData, note: event.target.value })} rows="4" placeholder="Descreva sua experiência" required />
-          </label>
-          <button className="full-width primary-btn" type="submit">Salvar relato</button>
+          <div className="card subsection-card full-width">
+            <h4>Informações principais</h4>
+            <div className="form-grid inner-grid">
+              <label>
+                Título do relato
+                <input value={formData.title} onChange={(event) => setFormData({ ...formData, title: event.target.value })} placeholder="Ex.: Viagem econômica em Lisboa" />
+              </label>
+              <label>
+                Destino
+                <input value={formData.destination} onChange={(event) => setFormData({ ...formData, destination: event.target.value })} placeholder="Ex.: Lisboa" />
+              </label>
+              <label>
+                Cidade
+                <input value={formData.city} onChange={(event) => setFormData({ ...formData, city: event.target.value })} placeholder="Ex.: Lisboa" />
+              </label>
+              <label>
+                Estado ou país
+                <input value={formData.region} onChange={(event) => setFormData({ ...formData, region: event.target.value })} placeholder="Ex.: Portugal" />
+              </label>
+              <label>
+                Data de início
+                <input type="date" value={formData.startDate} onChange={(event) => setFormData({ ...formData, startDate: event.target.value })} />
+              </label>
+              <label>
+                Data de fim
+                <input type="date" value={formData.endDate} onChange={(event) => setFormData({ ...formData, endDate: event.target.value })} />
+              </label>
+              <label>
+                Tipo de viagem
+                <select value={formData.travelType} onChange={(event) => setFormData({ ...formData, travelType: event.target.value })}>
+                  <option value="lazer">Lazer</option>
+                  <option value="trabalho">Trabalho</option>
+                  <option value="familia">Família</option>
+                  <option value="casal">Casal</option>
+                  <option value="solo">Solo</option>
+                  <option value="economica">Econômica</option>
+                  <option value="aventura">Aventura</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Gastos da viagem</h4>
+            <div className="form-grid inner-grid">
+              <label>Alimentação <input type="number" min="0" value={formData.food} onChange={(event) => setFormData({ ...formData, food: event.target.value })} placeholder="0" /></label>
+              <label>Transporte <input type="number" min="0" value={formData.transport} onChange={(event) => setFormData({ ...formData, transport: event.target.value })} placeholder="0" /></label>
+              <label>Hospedagem <input type="number" min="0" value={formData.lodging} onChange={(event) => setFormData({ ...formData, lodging: event.target.value })} placeholder="0" /></label>
+              <label>Passeios <input type="number" min="0" value={formData.activities} onChange={(event) => setFormData({ ...formData, activities: event.target.value })} placeholder="0" /></label>
+              <label>Compras <input type="number" min="0" value={formData.shopping} onChange={(event) => setFormData({ ...formData, shopping: event.target.value })} placeholder="0" /></label>
+              <label>Outros <input type="number" min="0" value={formData.others} onChange={(event) => setFormData({ ...formData, others: event.target.value })} placeholder="0" /></label>
+              <label className="full-width">Total calculado <input value={formData.total || '0'} readOnly /></label>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Relato da experiência</h4>
+            <div className="form-grid inner-grid">
+              <label className="full-width">Descreva os lugares visitados e sua experiência <textarea value={formData.experience} onChange={(event) => setFormData({ ...formData, experience: event.target.value })} rows="4" placeholder="Explique sua rotina, lugares visitados e sensação geral" /></label>
+              <label className="full-width">Dicas sobre o destino <textarea value={formData.tips} onChange={(event) => setFormData({ ...formData, tips: event.target.value })} rows="3" placeholder="Ajude outros viajantes com dicas práticas" /></label>
+              <label>Pontos positivos <textarea value={formData.positives} onChange={(event) => setFormData({ ...formData, positives: event.target.value })} rows="2" /></label>
+              <label>Pontos negativos <textarea value={formData.negatives} onChange={(event) => setFormData({ ...formData, negatives: event.target.value })} rows="2" /></label>
+              <label>Lugares que recomenda <textarea value={formData.recommendedPlaces} onChange={(event) => setFormData({ ...formData, recommendedPlaces: event.target.value })} rows="2" /></label>
+              <label>Lugares que evitaria <textarea value={formData.avoidPlaces} onChange={(event) => setFormData({ ...formData, avoidPlaces: event.target.value })} rows="2" /></label>
+              <label className="full-width">Observações sobre segurança, transporte e custo-benefício <textarea value={formData.safetyNotes} onChange={(event) => setFormData({ ...formData, safetyNotes: event.target.value })} rows="3" /></label>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Avaliação</h4>
+            <div className="form-grid inner-grid">
+              <label>Nota geral <input type="range" min="1" max="5" value={formData.generalRate} onChange={(event) => setFormData({ ...formData, generalRate: event.target.value })} /> <span>{formData.generalRate}/5</span></label>
+              <label>Segurança <input type="range" min="1" max="5" value={formData.safetyRate} onChange={(event) => setFormData({ ...formData, safetyRate: event.target.value })} /> <span>{formData.safetyRate}/5</span></label>
+              <label>Custo-benefício <input type="range" min="1" max="5" value={formData.costRate} onChange={(event) => setFormData({ ...formData, costRate: event.target.value })} /> <span>{formData.costRate}/5</span></label>
+              <label>Transporte <input type="range" min="1" max="5" value={formData.transportRate} onChange={(event) => setFormData({ ...formData, transportRate: event.target.value })} /> <span>{formData.transportRate}/5</span></label>
+              <label>Alimentação <input type="range" min="1" max="5" value={formData.foodRate} onChange={(event) => setFormData({ ...formData, foodRate: event.target.value })} /> <span>{formData.foodRate}/5</span></label>
+              <label className="checkbox-label"><input type="checkbox" checked={formData.recommendDestination} onChange={(event) => setFormData({ ...formData, recommendDestination: event.target.checked })} /> Recomendo este destino</label>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Localização e mapa</h4>
+            <div className="form-grid inner-grid">
+              <label>Latitude <input value={formData.latitude} onChange={(event) => setFormData({ ...formData, latitude: event.target.value })} /></label>
+              <label>Longitude <input value={formData.longitude} onChange={(event) => setFormData({ ...formData, longitude: event.target.value })} /></label>
+              <div className="map-box full-width">
+                <div className="map-pin" />
+                <span>Mapa mockado em construção</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Fotos</h4>
+            <p className="helper-text">Área visual para upload futuro. Por enquanto, é possível usar uma imagem mockada.</p>
+            <div className="photo-zone">
+              <div className="photo-preview">
+                <img src={formData.photos[0]} alt="Preview da viagem" />
+              </div>
+              <div>
+                <button type="button" className="ghost-btn">Adicionar foto</button>
+                <p className="helper-text">Integração futura com upload real ou imagens mockadas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card subsection-card full-width">
+            <h4>Resumo antes de salvar</h4>
+            <div className="summary-box">
+              <p><strong>{formData.title || 'Título do relato'}</strong></p>
+              <p>{formData.destination || 'Destino'} • {formData.city || 'Cidade'} • {formData.region || 'Estado/País'}</p>
+              <p>{formData.experience || 'Descreva sua experiência...'}</p>
+              <p>Total estimado: R$ {Number(formData.total || 0).toLocaleString('pt-BR')}</p>
+              <p>IA futura poderá resumir, detectar pontos fortes e gerar recomendações.</p>
+            </div>
+          </div>
+
+          <div className="actions-row full-width">
+            <button type="button" className="ghost-btn" onClick={() => setActiveView('dashboard')}>Cancelar</button>
+            <button type="submit" className="primary-btn">Salvar relato</button>
+          </div>
         </form>
       </section>
     </div>
