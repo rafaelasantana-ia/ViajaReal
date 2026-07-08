@@ -124,6 +124,26 @@ A aplicação ficará disponível em:
 - Frontend: http://localhost:5173
 - Backend: http://127.0.0.1:8000
 
+## Deploy no Render
+
+### Backend
+- Serviço: Web Service
+- Diretório raiz: `backend`
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Health check path: `/health`
+
+### Frontend
+- Serviço: Static Site
+- Diretório raiz: `frontend`
+- Build command: `npm install && npm run build`
+- Publish directory: `dist`
+- Variável de ambiente: `VITE_API_URL=https://<seu-backend>.onrender.com`
+
+### Observações
+- O backend já inicializa o banco `SQLite` automaticamente no primeiro start e popula dados de destino e relatos.
+- Ao configurar o frontend, use a URL pública do backend do Render para a variável `VITE_API_URL`.
+
 ## Prompts usados no Codex
 
 Os prompts utilizados durante o desenvolvimento foram voltados para:

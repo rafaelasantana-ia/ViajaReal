@@ -267,6 +267,14 @@ def create_story(payload: StoryCreate):
     return {"id": story_id, "message": "Relato cadastrado com sucesso."}
 
 
+@app.get("/stories", response_model=List[dict], summary="Lista relatos", description="Retorna todos os relatos cadastrados.")
+def list_stories():
+    conn = get_connection()
+    rows = conn.execute("SELECT * FROM stories ORDER BY id DESC").fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
 @app.get("/stories/by-destination", response_model=List[dict], summary="Lista relatos por destino", description="Retorna todos os relatos associados a um destino.")
 def list_stories_by_destination(destination: str = Query(..., description="Nome do destino")):
     conn = get_connection()

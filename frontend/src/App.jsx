@@ -115,6 +115,40 @@ const mockDestinationProfiles = [
     ],
   },
   {
+    id: 'buenos-aires',
+    name: 'Buenos Aires',
+    country: 'Argentina',
+    region: 'América do Sul',
+    summary: 'Buenos Aires mistura cultura, gastronomia e vida urbana vibrante, com opções econômicas e boa mobilidade.',
+    averageCost: 'R$ 320/dia',
+    positives: ['Cultura rica', 'Gastronomia de qualidade', 'Bairros charmosos'],
+    attentionPoints: ['Câmbio informal', 'Segurança à noite em algumas áreas', 'Trânsito em horários de pico'],
+    recommendedPlaces: ['Palermo', 'Recoleta', 'San Telmo', 'Puerto Madero'],
+    idealTraveler: 'Viajantes econômicos que desejam cultura, gastronomia e vida urbana',
+    itinerary: ['Dia 1: Palermo e cafés', 'Dia 2: Centro histórico e museus', 'Dia 3: Tango e gastronomia'],
+    tip: 'Use transporte público e compare câmbio oficial antes de trocar dinheiro.',
+    rating: 4.6,
+    safety: 'Boa',
+    transit: 'Bom',
+    stay: 'R$ 180/noite',
+    budget: 'Médio',
+    comparison: { lodging: 280, food: 130, transport: 90, safety: 78 },
+    reportRows: [
+      { category: 'Hospedagem', value: 'R$ 180/noite' },
+      { category: 'Alimentação', value: 'R$ 65/dia' },
+      { category: 'Transporte', value: 'R$ 35/dia' },
+    ],
+    stories: [
+      { title: 'Fim de semana em Palermo', rating: 4.7, cost: 'R$ 680', travelType: 'Amigos', summary: 'Bairro excelente para cafés, restaurantes e vida noturna moderada.', actionLabel: 'Ver relato completo' },
+      { title: 'Cultura e tango em Buenos Aires', rating: 4.5, cost: 'R$ 590', travelType: 'Casal', summary: 'Cidade com ótimas opções culturais e passeios a pé.', actionLabel: 'Ver relato completo' },
+    ],
+    mapMarkers: [
+      { label: 'Bar', type: 'restaurante', position: 'Palermo' },
+      { label: 'Museu', type: 'ponto', position: 'Recoleta' },
+      { label: 'Hospedagem', type: 'hospedagem', position: 'San Telmo' },
+    ],
+  },
+  {
     id: 'toquio',
     name: 'Tóquio',
     country: 'Japão',
@@ -197,6 +231,9 @@ function App() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [aiTip, setAiTip] = useState('');
+  const [smartAnalysis, setSmartAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisError, setAnalysisError] = useState('');
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -326,6 +363,8 @@ function App() {
   const handleGenerateSuggestion = (event) => {
     event.preventDefault();
     setSearchLoading(true);
+    setSmartAnalysis(null);
+    setAnalysisError('');
 
     window.setTimeout(() => {
       const query = searchQuery.trim().toLowerCase();
@@ -360,6 +399,44 @@ function App() {
       setSelectedDestination(recommendation);
       setSearchLoading(false);
     }, 900);
+  };
+
+  const handleGenerateSmartAnalysis = () => {
+    setSmartAnalysis(null);
+    setAnalysisLoading(true);
+    setAnalysisError('');
+
+    const destinationName = (searchResult?.name || searchQuery || '').toLowerCase();
+    const isBuenosAires = destinationName.includes('buenos') || destinationName.includes('aires');
+
+    window.setTimeout(() => {
+      if (isBuenosAires) {
+        setSmartAnalysis({
+          title: 'Com base em 38 relatos anônimos sobre Buenos Aires:',
+          items: [
+            'Gasto médio diário: R$ 320 a R$ 480',
+            'Bairro mais recomendado: Palermo',
+            'Transporte mais citado: Uber e metrô',
+            'Alerta recorrente: atenção ao câmbio informal',
+            'Perfil mais satisfeito: viajantes econômicos',
+            '82% dos viajantes disseram que voltariam',
+          ],
+        });
+      } else {
+        setSmartAnalysis({
+          title: `Análise inteligente para ${searchResult?.name || 'o destino selecionado'}:`,
+          items: [
+            `Gasto médio diário: ${searchResult?.averageCost || 'R$ 0/dia'}`,
+            `Bairro mais recomendado: ${searchResult?.recommendedPlaces?.[0] || 'N/A'}`,
+            `Transporte mais citado: ${searchResult?.transit || 'N/A'}`,
+            `Alerta recorrente: ${searchResult?.attentionPoints?.[0] || 'Atenção aos dados mockados'}`,
+            `Perfil mais satisfeito: ${searchResult?.idealTraveler || 'Viajante geral'}`,
+            'Análise gerada com base em dados simulados.',
+          ],
+        });
+      }
+      setAnalysisLoading(false);
+    }, 700);
   };
 
   const handleSubmit = async (event) => {
@@ -611,7 +688,10 @@ function App() {
               </label>
             </div>
 
-            <button type="submit" className="primary-btn">Gerar sugestão</button>
+            <div className="action-group">
+              <button type="submit" className="primary-btn">Gerar sugestão</button>
+              <button type="button" className="ghost-btn" onClick={handleGenerateSmartAnalysis}>Gerar análise inteligente</button>
+            </div>
           </form>
         </div>
 
@@ -689,6 +769,29 @@ function App() {
               <p>Defina seus filtros e clique em “Gerar sugestão” para ver um resumo inicial do destino.</p>
             </div>
           )}
+
+          {(analysisLoading || smartAnalysis) ? (
+            <div className="card analysis-card">
+              <div className="section-header">
+                <h4>Análise inteligente</h4>
+                <span className="chip">Mockado</span>
+              </div>
+              {analysisLoading ? (
+                <div className="loading-state">
+                  <div className="loading-spinner" />
+                  <p>Gerando análise inteligente...</p>
+                </div>
+              ) : smartAnalysis ? (
+                <>
+                  <p>{smartAnalysis.title}</p>
+                  <ul>
+                    {smartAnalysis.items.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </>
+              ) : null}
+              {analysisError ? <p className="error-text">{analysisError}</p> : null}
+            </div>
+          ) : null}
         </div>
       </section>
 
