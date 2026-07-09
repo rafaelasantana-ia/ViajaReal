@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 
-const API_URLS = [
-  import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000',
-  'http://127.0.0.1:8001',
-];
+const API_URLS = import.meta.env.VITE_API_URL
+  ? [import.meta.env.VITE_API_URL]
+  : import.meta.env.PROD
+    ? ['/api']
+    : ['http://127.0.0.1:8000', 'http://127.0.0.1:8001'];
+
+const defaultStats = {
+  average_cost: 'R$ 360/dia',
+  safety_level: 'Alta',
+  popular_destination: 'Lisboa',
+};
 
 const mockInsights = [
   { title: 'Melhor relação custo/benefício', text: 'Lisboa aparece como a opção mais equilibrada para quem quer conforto sem exagerar no orçamento.' },
@@ -184,6 +191,37 @@ const mockDestinationProfiles = [
   },
 ];
 
+function normalizeDestination(destination, index = 0) {
+  const matchedMock = mockDestinationProfiles.find((mockDestination) =>
+    mockDestination.name.toLowerCase() === String(destination?.name || '').toLowerCase()
+  );
+
+  return {
+    ...matchedMock,
+    ...destination,
+    id: String(destination?.id ?? matchedMock?.id ?? `destination-${index}`),
+    country: destination?.country || matchedMock?.country || '',
+    region: destination?.region || matchedMock?.region || '',
+    summary: destination?.summary || matchedMock?.summary || 'Resumo indisponível para este destino.',
+    rating: destination?.rating || matchedMock?.rating || 0,
+    safety: destination?.safety || matchedMock?.safety || 'Não informado',
+    transit: destination?.transit || matchedMock?.transit || 'Não informado',
+    stay: destination?.stay || matchedMock?.stay || 'Não informado',
+    budget: destination?.budget || matchedMock?.budget || 'Não informado',
+    comparison: matchedMock?.comparison || {
+      lodging: 300 + index * 70,
+      food: 180 + index * 40,
+      transport: 90 + index * 20,
+      safety: 70 + index * 10,
+    },
+    reportRows: matchedMock?.reportRows || [
+      { category: 'Hospedagem', value: destination?.budget || 'Não informado' },
+      { category: 'Alimentação', value: 'R$ 90/dia' },
+      { category: 'Transporte', value: 'R$ 40/dia' },
+    ],
+  };
+}
+
 async function fetchWithFallback(path) {
   let lastError;
 
@@ -226,8 +264,8 @@ async function postWithFallback(path, payload) {
 
 function App() {
   const [stories, setStories] = useState([]);
-  const [destinations, setDestinations] = useState([]);
-  const [stats, setStats] = useState({ average_cost: 'R$ 360/dia', safety_level: 'Alta', popular_destination: 'Lisboa' });
+  const [destinations, setDestinations] = useState(mockDestinationProfiles);
+  const [stats, setStats] = useState(defaultStats);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [aiTip, setAiTip] = useState('');
@@ -235,7 +273,7 @@ function App() {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
   const [activeView, setActiveView] = useState('dashboard');
-  const [selectedDestination, setSelectedDestination] = useState(null);
+  const [selectedDestination, setSelectedDestination] = useState(mockDestinationProfiles[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchPreferences, setSearchPreferences] = useState({
     travelType: 'solo',
@@ -293,24 +331,15 @@ function App() {
       fetchWithFallback('/stories'),
     ])
       .then(([destinationsData, statsData, insightsData, storiesData]) => {
-        const normalizedDestinations = (destinationsData || []).map((destination) => ({
-          ...destination,
-          tags: destination.tags ? destination.tags.split(',') : [],
-          comparison: {
-            lodging: 300 + destination.id * 70,
-            food: 180 + destination.id * 40,
-            transport: 90 + destination.id * 20,
-            safety: 70 + destination.id * 10,
-          },
-          reportRows: [
-            { category: 'Hospedagem', value: destination.budget },
-            { category: 'Alimentação', value: 'R$ 90/dia' },
-            { category: 'Transporte', value: 'R$ 40/dia' },
-          ],
-        }));
+        const normalizedDestinations = (destinationsData || []).map((destination, index) =>
+          normalizeDestination({
+            ...destination,
+            tags: destination.tags ? destination.tags.split(',') : [],
+          }, index)
+        );
         setDestinations(normalizedDestinations);
-        setStats(statsData || { average_cost: 'R$ 360/dia', safety_level: 'Alta', popular_destination: 'Lisboa' });
-        setAiTip(insightsData?.[0]?.text || 'Nenhuma sugestão disponível agora.');
+        setStats(statsData || defaultStats);
+        setAiTip(insightsData?.[0]?.text || mockInsights[0].text);
         setStories(Array.isArray(storiesData) ? storiesData : []);
         setReports(Array.isArray(storiesData) ? storiesData : []);
         if (!selectedDestination && normalizedDestinations[0]) {
@@ -325,9 +354,14 @@ function App() {
         setLoading(false);
       })
       .catch(() => {
-        setDestinations([]);
-        setStories([]);
-        setReports([]);
+        setDestinations(mockDestinationProfiles);
+        setStats(defaultStats);
+        setAiTip(mockInsights[0].text);
+        setStories(mockDestinationProfiles.flatMap((destination) => destination.stories || []));
+        setReports(mockDestinationProfiles.flatMap((destination) => destination.stories || []));
+        setSelectedDestination((current) => current || mockDestinationProfiles[0]);
+        setComparisonA(mockDestinationProfiles[0]?.id || '');
+        setComparisonB(mockDestinationProfiles[1]?.id || '');
         setLoading(false);
       });
   }, []);
@@ -843,33 +877,36 @@ function App() {
     </div>
   );
 
-  const renderDetails = () => (
+  const renderDetails = () => {
+    const destination = selectedDestination || destinations[0] || mockDestinationProfiles[0];
+
+    return (
     <div className="page-grid">
       <section className="card detail-card">
         <div className="section-header">
           <div>
             <p className="eyebrow">Detalhes do destino</p>
-            <h3>{selectedDestination.name}, {selectedDestination.country}</h3>
+            <h3>{destination.name}, {destination.country}</h3>
           </div>
-          <div className="metric-pill">Nota {selectedDestination.rating}/5</div>
+          <div className="metric-pill">Nota {destination.rating}/5</div>
         </div>
-        <p>{selectedDestination.summary}</p>
+        <p>{destination.summary}</p>
         <div className="stats-grid two-cols">
           <article className="card stat-card">
             <h4>Segurança</h4>
-            <strong>{selectedDestination.safety}</strong>
-            <span>{selectedDestination.transit} transporte</span>
+            <strong>{destination.safety}</strong>
+            <span>{destination.transit} transporte</span>
           </article>
           <article className="card stat-card">
             <h4>Hospedagem</h4>
-            <strong>{selectedDestination.stay}</strong>
-            <span>Orçamento estimado {selectedDestination.budget}</span>
+            <strong>{destination.stay}</strong>
+            <span>Orçamento estimado {destination.budget}</span>
           </article>
         </div>
         <div className="chart-card">
           <h4>Distribuição estimada</h4>
           <div className="bar-list">
-            {Object.entries(selectedDestination.comparison).map(([key, value]) => (
+            {Object.entries(destination.comparison || {}).map(([key, value]) => (
               <div key={key} className="bar-row">
                 <span>{key}</span>
                 <div className="bar-track"><div className="bar-fill" style={{ width: `${Math.min(value / 8, 100)}%` }} /></div>
@@ -888,7 +925,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {selectedDestination.reportRows.map((row) => (
+              {(destination.reportRows || []).map((row) => (
                 <tr key={row.category}>
                   <td>{row.category}</td>
                   <td>{row.value}</td>
@@ -899,7 +936,8 @@ function App() {
         </div>
       </section>
     </div>
-  );
+    );
+  };
 
   const renderForm = () => (
     <div className="page-grid">
@@ -1047,7 +1085,7 @@ function App() {
         <div className="compare-controls">
           <label>
             Destino A
-            <select value={comparisonA || ''} onChange={(event) => setComparisonA(Number(event.target.value))}>
+            <select value={comparisonA || ''} onChange={(event) => setComparisonA(event.target.value)}>
               {destinations.map((destination) => (
                 <option key={destination.id} value={destination.id}>{destination.name}</option>
               ))}
@@ -1055,7 +1093,7 @@ function App() {
           </label>
           <label>
             Destino B
-            <select value={comparisonB || ''} onChange={(event) => setComparisonB(Number(event.target.value))}>
+            <select value={comparisonB || ''} onChange={(event) => setComparisonB(event.target.value)}>
               {destinations.map((destination) => (
                 <option key={destination.id} value={destination.id}>{destination.name}</option>
               ))}
@@ -1116,27 +1154,30 @@ function App() {
     </div>
   );
 
-  const renderReport = () => (
+  const renderReport = () => {
+    const destination = selectedDestination || destinations[0] || mockDestinationProfiles[0];
+
+    return (
     <div className="page-grid">
       <section className="card">
         <div className="section-header">
           <div>
             <p className="eyebrow">Relatório do destino</p>
-            <h3>{selectedDestination.name} — visão consolidada</h3>
+            <h3>{destination.name} — visão consolidada</h3>
           </div>
           <div className="metric-pill">Simulação mockada</div>
         </div>
         <div className="report-layout">
           <div className="summary-box">
             <h4>Resumo</h4>
-            <p>{selectedDestination?.summary}</p>
+            <p>{destination.summary}</p>
           </div>
           <div className="summary-box">
             <h4>Fatores chaves</h4>
             <ul>
-              <li>Transporte público: {selectedDestination?.transit}</li>
-              <li>Hospedagem: {selectedDestination?.stay}</li>
-              <li>Segurança: {selectedDestination?.safety}</li>
+              <li>Transporte público: {destination.transit}</li>
+              <li>Hospedagem: {destination.stay}</li>
+              <li>Segurança: {destination.safety}</li>
             </ul>
           </div>
         </div>
@@ -1148,7 +1189,8 @@ function App() {
         </div>
       </section>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="app-shell">
