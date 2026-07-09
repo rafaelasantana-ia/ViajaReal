@@ -1,4 +1,5 @@
 import { Bell, ChevronLeft, Heart, Search, UserRound } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { currentUser } from '../../data/mockUser';
 
@@ -26,6 +27,7 @@ export function Header() {
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
   const title = titles[location.pathname] || 'ViajaReal';
+  const [favoriteDestination, setFavoriteDestination] = useState(false);
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:px-8">
@@ -43,8 +45,14 @@ export function Header() {
             <div className="flex items-center gap-2">
               <h1 className="truncate text-lg font-extrabold text-slate-950 md:text-2xl">{title}</h1>
               {location.pathname === '/destination' ? (
-                <button type="button" className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 shadow-card" aria-label="Salvar destino">
-                  <Heart size={16} />
+                <button
+                  type="button"
+                  onClick={() => setFavoriteDestination((current) => !current)}
+                  className={`grid h-8 w-8 place-items-center rounded-full bg-white shadow-card ${favoriteDestination ? 'text-rose-500' : 'text-slate-600'}`}
+                  aria-label="Salvar destino"
+                  title={favoriteDestination ? 'Destino salvo' : 'Salvar destino'}
+                >
+                  <Heart size={16} fill={favoriteDestination ? 'currentColor' : 'none'} />
                 </button>
               ) : null}
             </div>

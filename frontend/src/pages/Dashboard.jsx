@@ -1,4 +1,5 @@
 import { Bot, CalendarDays, MapPinned, ReceiptText, Search, UsersRound } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DestinationCard } from '../components/cards/DestinationCard';
 import { ReportCard } from '../components/cards/ReportCard';
@@ -12,6 +13,14 @@ export function Dashboard() {
   const trip = getActiveTrip();
   const destinations = getPopularDestinations();
   const reports = getRecentReports(1);
+  const [query, setQuery] = useState('');
+  const filteredDestinations = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return destinations;
+    return destinations.filter((destination) =>
+      `${destination.name} ${destination.location} ${destination.summary}`.toLowerCase().includes(normalizedQuery),
+    );
+  }, [destinations, query]);
 
   return (
     <div className="space-y-5">
@@ -19,10 +28,10 @@ export function Dashboard() {
         <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80" alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/70 via-slate-900/35 to-transparent" />
         <div className="relative">
-          <h1 className="text-2xl font-extrabold md:text-4xl">Olá, {currentUser.name.split(' ')[0]}! 👋</h1>
+          <h1 className="text-2xl font-extrabold md:text-4xl">Olá, {currentUser.name.split(' ')[0]}!</h1>
           <p className="mt-2 max-w-xl text-sm font-medium text-white/90 md:text-base">Explore o mundo com experiências reais de viajantes como você.</p>
           <label className="mt-6 flex max-w-xl items-center gap-2 rounded-xl bg-white px-3 py-3 text-slate-500 shadow-card">
-            <input className="min-w-0 flex-1 bg-transparent text-sm outline-none" placeholder="Para onde você quer ir?" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-sm outline-none" placeholder="Para onde você quer ir?" />
             <Search size={18} />
           </label>
         </div>
@@ -61,8 +70,9 @@ export function Dashboard() {
           <Link to="/destination" className="text-xs font-bold text-brand-700">Ver todos</Link>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {destinations.map((destination) => <DestinationCard key={destination.id} destination={destination} />)}
+          {filteredDestinations.map((destination) => <DestinationCard key={destination.id} destination={destination} />)}
         </div>
+        {!filteredDestinations.length ? <div className="card text-sm text-slate-500">Nenhum destino encontrado para “{query}”.</div> : null}
       </section>
 
       <section className="space-y-3">

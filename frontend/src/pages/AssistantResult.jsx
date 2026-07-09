@@ -1,4 +1,5 @@
 import { Download, Pencil } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { generateItinerary } from '../services/aiService';
 
@@ -12,6 +13,12 @@ function getResult() {
 
 export function AssistantResult() {
   const result = getResult();
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    localStorage.setItem('viajareal-saved-itinerary', JSON.stringify(result));
+    setSaved(true);
+  };
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
@@ -19,6 +26,8 @@ export function AssistantResult() {
         <h1 className="text-lg font-extrabold text-slate-950">Seu roteiro personalizado</h1>
         <p className="text-xs text-slate-500">{result.destination} · {result.days} dias · {result.style}</p>
       </div>
+
+      {saved ? <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">Roteiro salvo localmente no modo mockado.</div> : null}
 
       <section className="card">
         <h2 className="text-sm font-extrabold text-slate-950">Resumo da viagem</h2>
@@ -47,7 +56,7 @@ export function AssistantResult() {
       </section>
 
       <div className="grid grid-cols-2 gap-3">
-        <button type="button" className="primary-btn"><Download size={16} /> Salvar roteiro</button>
+        <button type="button" className="primary-btn" onClick={handleSave}><Download size={16} /> Salvar roteiro</button>
         <Link to="/assistant" className="ghost-btn"><Pencil size={16} /> Editar roteiro</Link>
       </div>
     </div>
