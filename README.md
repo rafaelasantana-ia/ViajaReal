@@ -4,6 +4,71 @@ ViajaReal é uma aplicação de planejamento de viagens inspirada em experiênci
 
 O projeto está preparado para evoluir para integrações reais com IA, APIs externas, autenticação e persistência, mas nesta etapa o foco é demonstrar a experiência completa no frontend.
 
+## Descrição do problema e solução proposta
+
+O problema trabalhado é a dificuldade de planejar uma viagem com base em informações confiáveis e organizadas. Normalmente, o viajante precisa consultar relatos soltos, estimar custos manualmente, pesquisar mapas em outra ferramenta e montar o roteiro em planilhas ou anotações separadas.
+
+A solução proposta pelo ViajaReal é centralizar essa experiência em uma plataforma única, com:
+
+- descoberta de destinos;
+- visualização de detalhes do destino;
+- planejamento de roteiro por dias;
+- linha do tempo de atividades;
+- mapa de lugares;
+- controle de custos;
+- relatos da comunidade;
+- assistente de viagem mockado;
+- resultado de roteiro personalizado;
+- perfil/configurações do usuário.
+
+Nesta versão intermediária, todos os dados são simulados. A intenção é validar a experiência de produto, a navegação e os fluxos principais antes de conectar fontes reais.
+
+## Como a IA será integrada futuramente
+
+A IA ainda não está integrada de forma real. O projeto possui um `aiService.js` com `MOCK_MODE = true`, usado para simular geração de roteiro e recomendações.
+
+Futuramente, a IA poderá ser usada para:
+
+- gerar roteiros personalizados com base em destino, orçamento, quantidade de dias e estilo de viagem;
+- resumir relatos de outros viajantes;
+- estimar custos com base em histórico real;
+- recomendar lugares próximos no mapa;
+- identificar alertas de segurança, melhor época de viagem e pontos de atenção;
+- transformar relatos longos em dicas práticas para o usuário.
+
+O ponto de integração planejado é substituir as funções mockadas do `aiService.js` por chamadas a uma API real.
+
+## Escolhas de design e arquitetura
+
+### Arquitetura
+
+A aplicação foi organizada como SPA em React porque o objetivo da etapa intermediária era entregar navegação fluida entre várias telas e permitir deploy simples na Vercel.
+
+As principais escolhas foram:
+
+- `React Router` para navegação entre telas reais, em vez de controlar tudo por estado em um único componente.
+- `Tailwind CSS` para acelerar a construção visual e manter consistência de espaçamentos, cores e responsividade.
+- `src/data` para concentrar todos os dados mockados fora dos componentes.
+- `src/services` para simular uma camada de acesso a dados e facilitar futura substituição por API real.
+- `src/components` para separar cards, layout, timeline e elementos do assistente.
+- `vercel.json` com fallback para `index.html`, garantindo que rotas diretas do React funcionem no deploy.
+
+### UI e experiência
+
+O mockup original tinha forte aparência mobile. A primeira implementação ficou presa demais em uma largura de celular, o que prejudicou o uso no navegador desktop. Depois disso, a interface foi ajustada para:
+
+- usar menu lateral no desktop;
+- manter navegação inferior no mobile;
+- ocupar melhor a largura da tela;
+- organizar conteúdos em grids responsivos;
+- manter cards brancos, fundo claro, sombra suave e roxo como cor principal.
+
+Alternativas consideradas:
+
+- manter uma interface 100% mobile, mas isso foi descartado por ficar pouco usual no deploy desktop;
+- integrar backend FastAPI desde já, mas nesta etapa foi priorizado um frontend mockado completo para reduzir risco de falhas no deploy;
+- usar mapa totalmente mockado em CSS, mas foi escolhido React Leaflet para aproximar a experiência de um mapa real.
+
 ## Estado atual do projeto
 
 ### Implementado
@@ -305,6 +370,50 @@ Essa configuração garante que rotas do React Router funcionem ao acessar diret
 - Dados salvos em `localStorage` não são compartilhados entre usuários.
 - O backend existe no repositório, mas não está integrado ao fluxo atual do frontend.
 - O bundle de produção emite aviso de tamanho por causa de mapa/gráficos; isso não quebra o build, mas pode ser otimizado futuramente com lazy loading.
+
+## Uso do agente de codificação
+
+O projeto foi desenvolvido com uso extensivo do Codex como agente de codificação, com supervisão e ajustes ao longo do processo. O Codex foi usado para:
+
+- implementar a estrutura de páginas, componentes, dados e services;
+- corrigir problemas de deploy na Vercel;
+- transformar botões visuais em interações mockadas;
+- validar build de produção;
+- ajustar a interface após feedback de usabilidade;
+- atualizar documentação.
+
+### Exemplos de prompts usados
+
+Alguns prompts representativos usados durante o desenvolvimento:
+
+- "Analise o código do ViajaReal. Localmente todas as páginas funcionam, mas no deploy da Vercel as páginas de detalhes e relatório ficam vazias. Verifique a causa e ajuste para que o frontend funcione corretamente em produção."
+- "Implemente no projeto ViajaReal as telas e funcionalidades baseadas no mockup visual enviado. A aplicação deve ser uma plataforma de planejamento de viagens inspirada no Wanderlog, usando React, Vite, Tailwind CSS, React Router, Lucide React, Recharts e React Leaflet, com dados mockados separados em `src/data`, services em `src/services`, componentes reutilizáveis e páginas separadas."
+- "Crie as telas Dashboard, Página de Destino, Planejador de Roteiro, Timeline por Dia, Mapa de Lugares, Controle de Custos, Relatos da Comunidade, Assistente de Viagem Mockado, Resultado do Assistente e Perfil/Configurações. As telas devem navegar entre si e funcionar sem backend real."
+- "A primeira versão não ficou usual no desktop. Ajuste a experiência para ficar responsiva, com menu lateral no desktop, navegação inferior no mobile, melhor aproveitamento de tela e cards mais organizados."
+- "Verifique por que nem todas as funcionalidades estão operáveis no deploy. Transforme botões e abas que estavam apenas visuais em interações mockadas funcionais, como filtros, alternância de abas, adicionar parada, adicionar gasto, salvar roteiro e menu de perfil."
+- "Atualize o README com as mudanças do projeto, explicando o que está implementado, o que falta implementar, as limitações atuais, como rodar localmente, como funciona o deploy na Vercel e como a IA poderá ser integrada futuramente."
+
+Esses prompts mostram que o desenvolvimento foi iterativo: primeiro houve geração de estrutura e telas, depois correção de problemas reais de deploy, melhoria de usabilidade e documentação.
+
+## O que funcionou bem
+
+- O Codex conseguiu criar rapidamente uma estrutura modular com `data`, `services`, `components` e `pages`.
+- A geração das telas principais foi eficiente para cobrir um escopo grande em pouco tempo.
+- A separação dos dados mockados facilitou deixar os componentes mais limpos.
+- O uso de React Router, Tailwind, Recharts e React Leaflet deixou a aplicação mais próxima de um produto real.
+- O agente identificou problemas típicos de deploy SPA na Vercel e ajustou o fallback de rotas.
+- A validação com build de produção ajudou a encontrar problemas antes do deploy.
+
+## O que não funcionou bem e precisou de intervenção
+
+- A primeira versão baseada no mockup ficou muito presa ao formato mobile, com largura limitada, e não ficou usual no desktop.
+- Algumas interações foram inicialmente apenas visuais, como abas, filtros e botões. Depois precisaram ser corrigidas para operar com estado local.
+- O deploy exigiu ajuste no `vercel.json`, porque a aplicação passou a ser frontend-only e precisava de fallback para rotas do React.
+- A integração real com backend e IA ficou fora do escopo desta etapa.
+- O bundle ficou grande por causa de mapa e gráficos; futuramente seria melhor aplicar code splitting/lazy loading.
+- O README antigo ficou desatualizado depois das mudanças e precisou ser reescrito para refletir o estado real do projeto.
+
+Se fosse feito novamente, uma melhoria seria começar pela arquitetura responsiva desktop/mobile antes de copiar a estética do mockup, além de definir desde o início quais botões deveriam ter comportamento mockado obrigatório.
 
 ## Última validação
 
