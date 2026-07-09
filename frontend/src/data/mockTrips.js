@@ -1,0 +1,47 @@
+export const activeTrip = {
+  id: 'trip-japao-2026',
+  title: 'Viagem para Japão',
+  destinationId: 'japao',
+  destination: 'Japão',
+  period: '12 a 23 de Abril',
+  daysCount: 12,
+  status: 'Em planejamento',
+  cover: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=900&q=80',
+  travelers: [
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80',
+  ],
+  days: [
+    {
+      id: 'day-1',
+      label: 'Dia 1',
+      date: '12/04',
+      city: 'Tóquio',
+      stops: [
+        { id: 'hotel-shinjuku', time: '08:00', title: 'Hotel em Shinjuku', category: 'Hospedagem', description: 'Check-in', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80' },
+        { id: 'meiji', time: '10:00', title: 'Santuário Meiji', category: 'Cultura', description: 'Explorar o santuário e arredores', image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=300&q=80' },
+        { id: 'shibuya-lunch', time: '13:00', title: 'Almoço em Shibuya', category: 'Gastronomia', description: 'Restaurante local', image: 'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=300&q=80' },
+        { id: 'crossing', time: '15:00', title: 'Shibuya Crossing', category: 'Passeio', description: 'Conhecer o cruzamento mais famoso', image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=300&q=80' },
+        { id: 'izakaya', time: '18:00', title: 'Jantar em Izakaya', category: 'Gastronomia', description: 'Culinária japonesa', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80' },
+      ],
+    },
+    {
+      id: 'day-2',
+      label: 'Dia 2',
+      date: '13/04',
+      city: 'Kyoto',
+      stops: [
+        { id: 'breakfast', time: '08:00', title: 'Café da manhã no hotel', category: 'Gastronomia', description: 'Começar o dia com calma', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=300&q=80' },
+        { id: 'fushimi', time: '09:30', title: 'Templo Fushimi Inari', category: 'Cultura', description: 'Caminhada pelos portões torii', image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?auto=format&fit=crop&w=300&q=80' },
+        { id: 'gion', time: '12:00', title: 'Almoço em Gion', category: 'Gastronomia', description: 'Restaurante tradicional', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=300&q=80' },
+        { id: 'arashiyama', time: '14:00', title: 'Arashiyama Bamboo Grove', category: 'Natureza', description: 'Passeio pelo bosque de bambu', image: 'https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=300&q=80' },
+        { id: 'togetsukyo', time: '16:30', title: 'Ponte Togetsukyo', category: 'Passeio', description: 'Vista panorâmica do rio', image: 'https://images.unsplash.com/photo-1493780474015-ba834fd0ce2f?auto=format&fit=crop&w=300&q=80' },
+        { id: 'pontocho', time: '19:00', title: 'Jantar em Pontocho', category: 'Gastronomia', description: 'Rua tradicional com ótimos restaurantes', image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=300&q=80' },
+      ],
+    },
+    { id: 'day-3', label: 'Dia 3', date: '14/04', city: 'Kyoto', stops: [] },
+    { id: 'day-4', label: 'Dia 4', date: '15/04', city: 'Osaka', stops: [] },
+    { id: 'day-5', label: 'Dia 5', date: '16/04', city: 'Osaka', stops: [] },
+  ],
+};
