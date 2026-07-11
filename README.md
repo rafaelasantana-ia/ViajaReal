@@ -301,7 +301,7 @@ O deploy atual está configurado como frontend-only.
 Endpoint publicado:
 
 ```text
-https://viaja-real-7ydpnmcb8-rafaela9.vercel.app/profile
+https://viaja-real-7ydpnmcb8-rafaela9.vercel.app
 ```
 
 Configuração usada em `vercel.json`:
