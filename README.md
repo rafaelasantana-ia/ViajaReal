@@ -298,6 +298,12 @@ npm run preview
 
 O deploy atual está configurado como frontend-only.
 
+Endpoint publicado:
+
+```text
+https://viaja-real-7ydpnmcb8-rafaela9.vercel.app/profile
+```
+
 Configuração usada em `vercel.json`:
 
 ```json
