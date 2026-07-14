@@ -2,12 +2,13 @@ import { CalendarDays, Map, MapPin, MessageSquareText, Plus, ReceiptText, Sparkl
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AITripPlanResult } from '../components/assistant/AITripPlanResult';
+import { AITravelChecklist } from '../components/assistant/AITravelChecklist';
 import { AddStopButton } from '../components/itinerary/AddStopButton';
 import { DaySelector } from '../components/itinerary/DaySelector';
 import { TimelineList } from '../components/itinerary/TimelineList';
 import { planTripWithAI } from '../services/aiService';
 import { getLiveDestinationData } from '../services/externalDestinationService';
-import { getActiveTrip } from '../services/tripService';
+import { getActiveTrip, getSavedAIPlan, saveAIPlan } from '../services/tripService';
 
 const tabs = [
   { label: 'Roteiro', icon: ReceiptText },
@@ -69,20 +70,22 @@ function resultAsText(result) {
 export function TripPlanner() {
   const [searchParams] = useSearchParams();
   const trip = getActiveTrip();
+  const [savedPlan] = useState(() => getSavedAIPlan());
   const [days, setDays] = useState(trip?.days || []);
   const [activeDayId, setActiveDayId] = useState(trip?.days[0]?.id || null);
   const [activeTab, setActiveTab] = useState('Roteiro');
   const [notice, setNotice] = useState('');
   const [form, setForm] = useState(() => ({
     ...initialForm,
-    destination: searchParams.get('destination')?.trim() || initialForm.destination,
+    ...(savedPlan?.form || {}),
+    destination: searchParams.get('destination')?.trim() || savedPlan?.form?.destination || initialForm.destination,
   }));
   const [formErrors, setFormErrors] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
-  const [aiPlan, setAiPlan] = useState(null);
+  const [aiPlan, setAiPlan] = useState(savedPlan?.result || null);
   const [aiError, setAiError] = useState('');
   const [copyStatus, setCopyStatus] = useState('');
-  const [externalData, setExternalData] = useState(null);
+  const [externalData, setExternalData] = useState(savedPlan?.externalData || null);
   const [externalLoading, setExternalLoading] = useState(false);
   const [externalError, setExternalError] = useState('');
   const day = days.find((item) => item.id === activeDayId) || days[0] || null;
@@ -113,7 +116,9 @@ export function TripPlanner() {
       setAiPlan(result);
       if (liveResult.error) setExternalError(liveResult.error.message);
       else setExternalData(liveResult);
+      saveAIPlan({ form, result, externalData: liveResult.error ? null : liveResult });
       sessionStorage.setItem('viajareal-detailed-ai-plan', JSON.stringify(result));
+      setNotice('Planejamento salvo neste navegador.');
     } catch (error) {
       setAiError(error.message || 'Não foi possível gerar o planejamento.');
     } finally {
@@ -235,9 +240,13 @@ export function TripPlanner() {
             <Sparkles size={17} className={aiLoading ? 'animate-pulse' : ''} /> {aiLoading ? 'Gerando planejamento...' : 'Gerar planejamento com IA'}
           </button>
         </form>
+
+        {notice && <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700" role="status">{notice}</div>}
       </section>
 
       <AITripPlanResult result={aiPlan} externalData={externalData} onRegenerate={generatePlan} onSendToChat={sendToChat} onCopy={copyResult} copyStatus={copyStatus} loading={aiLoading} />
+
+      {aiPlan && <AITravelChecklist form={form} externalData={externalData} />}
 
       {trip ? <section className="space-y-5 border-t border-slate-200 pt-7">
         <div className="flex items-center justify-between">

@@ -1,6 +1,7 @@
 import { Filter } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AddReportForm } from '../components/reports/AddReportForm';
+import { ReportDetailsModal } from '../components/reports/ReportDetailsModal';
 import { ReportCard } from '../components/cards/ReportCard';
 import { summarizeTravelReports } from '../services/aiService';
 import { getCommunityReports, getSavedCommunityReports, saveCommunityReport } from '../services/communityService';
@@ -14,6 +15,7 @@ export function CommunityReports() {
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -112,8 +114,9 @@ export function CommunityReports() {
       </section>
 
       <section className="grid gap-3 lg:grid-cols-2">
-        {visibleReports.map((report) => <ReportCard key={report.id} report={report} />)}
+        {visibleReports.map((report) => <ReportCard key={report.id} report={report} onOpen={setSelectedReport} />)}
       </section>
+      <ReportDetailsModal report={selectedReport} onClose={() => setSelectedReport(null)} />
     </div>
   );
 }

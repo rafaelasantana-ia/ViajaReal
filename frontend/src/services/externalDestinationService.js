@@ -7,6 +7,7 @@ export const getDestinationWeather = (latitude, longitude, forecastDays = 7) => 
   forecast_days: forecastDays,
 });
 export const getDestinationImages = (destination, limit = 3) => getApi('/api/destinations/images', { destination, limit });
+export const getDestinationWikivoyage = (destination) => getApi('/api/destinations/wikivoyage', { destination });
 
 export async function getLiveDestinationData(destination) {
   const imagePromise = getDestinationImages(destination).catch((error) => ({ images: [], fallback: true, limitations: [error.message] }));

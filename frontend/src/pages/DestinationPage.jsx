@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { DestinationExperiencesSummary } from '../components/assistant/DestinationExperiencesSummary';
 import { summarizeDestination, summarizeDestinationReports } from '../services/aiService';
 import { getDestinationByName } from '../services/destinationService';
-import { getLiveDestinationData } from '../services/externalDestinationService';
+import { getDestinationWikivoyage, getLiveDestinationData } from '../services/externalDestinationService';
 
 const tabs = ['Geral', 'Sobre', 'Clima', 'Custos', 'Dicas', 'Galeria'];
 const highlightIcons = [Sparkles, Wallet, Globe2, Shield];
@@ -16,6 +16,8 @@ export function DestinationPage() {
   const [liveData, setLiveData] = useState(null);
   const [destinationLoading, setDestinationLoading] = useState(!localDestination);
   const [destinationError, setDestinationError] = useState('');
+  const [wikivoyage, setWikivoyage] = useState(null);
+  const [wikivoyageError, setWikivoyageError] = useState('');
   const [activeTab, setActiveTab] = useState('Geral');
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -51,6 +53,16 @@ export function DestinationPage() {
       });
     return () => { active = false; };
   }, [localDestination, requestedDestination]);
+
+  useEffect(() => {
+    let active = true;
+    setWikivoyage(null);
+    setWikivoyageError('');
+    getDestinationWikivoyage(requestedDestination)
+      .then((result) => { if (active) setWikivoyage(result); })
+      .catch((error) => { if (active) setWikivoyageError(error.message || 'Conteúdo do Wikivoyage indisponível.'); });
+    return () => { active = false; };
+  }, [requestedDestination]);
 
   const destination = localDestination || (liveData ? {
     id: requestedDestination,
@@ -123,7 +135,7 @@ export function DestinationPage() {
 
   const tabContent = {
     Geral: destination.summary,
-    Sobre: destination.summary,
+    Sobre: wikivoyage?.summary || destination.summary,
     Clima: destination.climate || 'Não informado nos dados mockados.',
     Custos: destination.isLive ? destination.averageCost : `Estimativa mockada: ${destination.averageCost}.`,
     Dicas: destination.attentionPoints?.join(' · ') || 'Não informado nos dados mockados.',
@@ -147,6 +159,11 @@ export function DestinationPage() {
             Localização: Nominatim/OpenStreetMap · clima: {liveData.weather ? 'Open-Meteo' : 'indisponível'} · imagem: {liveData.images.source?.name || 'fallback local'}. A previsão meteorológica é uma estimativa, não uma garantia.
           </div>
         ) : null}
+        {wikivoyage ? (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
+            Informações turísticas complementares: <a href={wikivoyage.page_url} target="_blank" rel="noreferrer" className="font-bold underline">{wikivoyage.title} no Wikivoyage</a> · conteúdo sob licença <a href={wikivoyage.source.license_url} target="_blank" rel="noreferrer" className="font-bold underline">{wikivoyage.source.license}</a>.
+          </div>
+        ) : wikivoyageError ? <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">Wikivoyage: {wikivoyageError}</div> : null}
         <div className="flex overflow-x-auto border-b border-slate-100 bg-slate-50">
           {tabs.map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(tab)} className={`tab-btn ${activeTab === tab ? 'tab-btn-active' : ''}`}>{tab}</button>

@@ -1,7 +1,6 @@
 import { AlertTriangle, Bot, UserRound } from 'lucide-react';
 import { BudgetCard } from './BudgetCard';
 import { ComparisonCard } from './ComparisonCard';
-import { ToolBadge } from './ToolBadge';
 import { TripPlanCard } from './TripPlanCard';
 
 export function ChatMessage({ message, onRetry }) {
@@ -26,11 +25,6 @@ export function ChatMessage({ message, onRetry }) {
             {response.type === 'trip_plan' && <TripPlanCard data={response.data} />}
             {response.type === 'budget' && <BudgetCard data={response.data} />}
             {response.type === 'comparison' && <ComparisonCard data={response.data} />}
-            {response.tools_used?.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Ferramentas utilizadas">
-                {response.tools_used.map((tool) => <ToolBadge key={tool} name={tool} />)}
-              </div>
-            )}
             {response.limitations?.length > 0 && (
               <aside className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2 text-[10px] leading-relaxed text-amber-800">
                 <p className="flex items-start gap-1 font-semibold"><AlertTriangle size={11} className="mt-0.5 shrink-0" /> Limitações</p>

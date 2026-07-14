@@ -7,6 +7,7 @@ from app.core.config import Settings
 from app.services.geocoding_service import GeocodingService
 from app.services.image_service import ImageService
 from app.services.weather_service import WeatherService
+from app.services.wikivoyage_service import WikivoyageService
 
 
 def settings(pexels_key="test-key"):
@@ -68,6 +69,27 @@ class ExternalServicesTest(unittest.TestCase):
         fallback = ImageService(settings(None), cache=TTLCache(60)).search("Bonito", 1)
         self.assertTrue(fallback["fallback"])
         self.assertEqual(fallback["images"][0]["url"], "/images/destination-fallback.svg")
+
+    def test_wikivoyage_returns_summary_attribution_and_cache(self):
+        calls = []
+
+        def handler(request):
+            calls.append(request)
+            return httpx.Response(200, json={"query": {"pages": [{
+                "title": "Bonito",
+                "extract": "Bonito é um destino turístico brasileiro.",
+                "fullurl": "https://pt.wikivoyage.org/wiki/Bonito",
+            }]}})
+
+        with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+            service = WikivoyageService(settings(), client, TTLCache(60))
+            first = service.get_destination("Bonito")
+            second = service.get_destination("Bonito")
+        self.assertEqual(first["title"], "Bonito")
+        self.assertEqual(first["source"]["name"], "Wikivoyage")
+        self.assertTrue(second["cached"])
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].url.params["generator"], "search")
 
 
 if __name__ == "__main__":

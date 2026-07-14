@@ -2,12 +2,21 @@ import { Filter } from 'lucide-react';
 import { useState } from 'react';
 import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet';
 import { PlaceCard } from '../components/cards/PlaceCard';
-import { recommendPlaces } from '../services/aiService';
 import { getActiveTrip } from '../services/tripService';
 
 export function PlacesMap() {
   const trip = getActiveTrip();
-  const allPlaces = recommendPlaces();
+  const center = trip?.location && Number.isFinite(trip.location.lat) && Number.isFinite(trip.location.lng)
+    ? [trip.location.lat, trip.location.lng]
+    : [-14.235, -51.9253];
+  const allPlaces = (trip?.days || []).flatMap((day, dayIndex) => day.stops.map((stop, stopIndex) => ({
+    ...stop,
+    order: stopIndex + 1,
+    type: stop.category,
+    lat: center[0] + (dayIndex * 0.003) + (stopIndex * 0.0015),
+    lng: center[1] + (dayIndex * 0.003) - (stopIndex * 0.0015),
+    color: '#7c3aed',
+  })));
   const [view, setView] = useState('Mapa');
   const [gastronomyOnly, setGastronomyOnly] = useState(false);
   const places = gastronomyOnly ? allPlaces.filter((place) => place.type === 'Gastronomia') : allPlaces;
@@ -25,7 +34,7 @@ export function PlacesMap() {
     <div className="grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
       {view === 'Mapa' ? (
         <section className="h-[420px] overflow-hidden rounded-3xl bg-slate-200 shadow-card lg:sticky lg:top-28">
-          <MapContainer center={[35.6764, 139.6993]} zoom={12} scrollWheelZoom={false}>
+          <MapContainer center={center} zoom={12} scrollWheelZoom={false}>
             <TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {places.map((place) => (
               <CircleMarker key={place.id} center={[place.lat, place.lng]} radius={11} pathOptions={{ color: place.color, fillColor: place.color, fillOpacity: 0.9 }}>

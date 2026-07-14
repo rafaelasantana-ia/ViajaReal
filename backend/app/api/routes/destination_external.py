@@ -8,6 +8,7 @@ from app.services.external_api import ExternalAPIError
 from app.services.geocoding_service import GeocodingService
 from app.services.image_service import ImageService
 from app.services.weather_service import WeatherService
+from app.services.wikivoyage_service import WikivoyageService
 
 router = APIRouter(prefix="/api/destinations", tags=["Dados externos de destinos"])
 logger = logging.getLogger("viajareal.external.routes")
@@ -39,3 +40,11 @@ def destination_images(
     limit: int = Query(3, ge=1, le=10),
 ) -> dict:
     return ImageService().search(destination, limit)
+
+
+@router.get("/wikivoyage", summary="Busca informações turísticas no Wikivoyage")
+def destination_wikivoyage(destination: str = Query(..., min_length=2, max_length=120)) -> dict:
+    try:
+        return WikivoyageService().get_destination(destination)
+    except ExternalAPIError as exc:
+        raise HTTPException(status_code=exc.status_code, detail={"code": exc.code, "message": str(exc)}) from exc
