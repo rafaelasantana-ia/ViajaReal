@@ -1,4 +1,4 @@
-import { Bot, CalendarDays, Home, Map, Plus, ReceiptText, Search, Settings, UsersRound } from 'lucide-react';
+import { CalendarDays, Home, Map, Plus, ReceiptText, Search, Settings, UsersRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const mobileItems = [
@@ -17,7 +17,6 @@ const desktopItems = [
   { to: '/places', label: 'Mapa de lugares', icon: Map },
   { to: '/costs', label: 'Controle de custos', icon: ReceiptText },
   { to: '/community', label: 'Relatos', icon: UsersRound },
-  { to: '/assistant', label: 'Assistente mockado', icon: Bot },
   { to: '/profile', label: 'Perfil', icon: Settings },
 ];
 

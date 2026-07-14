@@ -1,0 +1,95 @@
+[
+  {
+    "name": "planejamento_com_dados_mockados",
+    "input": {
+      "user_request": "Monte uma base de roteiro de 3 dias em Florianópolis para quem gosta de praia e natureza, com R$ 500 para atrações.",
+      "tool_results": {
+        "generate_itinerary_base": {
+          "ok": true,
+          "data": {
+            "destination": {"id": "florianopolis-sc", "name": "Florianópolis"},
+            "days": 3,
+            "interests": ["praia", "natureza"],
+            "available_budget": 500,
+            "itinerary": [
+              {"day": 1, "attractions": [{"id": "trilha-lagoinha", "name": "Trilha da Lagoinha do Leste", "estimated_cost": 20}], "estimated_cost": 20},
+              {"day": 2, "attractions": [{"id": "praia-mole", "name": "Praia Mole", "estimated_cost": 30}], "estimated_cost": 30},
+              {"day": 3, "attractions": [{"id": "lagoa-conceicao", "name": "Lagoa da Conceição", "estimated_cost": 80}], "estimated_cost": 80}
+            ],
+            "estimated_activities_cost": 130,
+            "remaining_budget": 370,
+            "insufficient_data": false
+          }
+        }
+      }
+    },
+    "output": {
+      "answer": "Organizei uma atração por dia em Florianópolis, priorizando praia e natureza. O custo mockado estimado das atrações é R$ 130, deixando R$ 370 do orçamento informado.",
+      "type": "trip_plan",
+      "tools_used": ["generate_itinerary_base"],
+      "suggestions": ["Defina o tipo de hospedagem para estimar o orçamento completo."],
+      "data": {
+        "destination": "Florianópolis",
+        "days": 3,
+        "itinerary": [
+          {"day": 1, "attractions": ["Trilha da Lagoinha do Leste"]},
+          {"day": 2, "attractions": ["Praia Mole"]},
+          {"day": 3, "attractions": ["Lagoa da Conceição"]}
+        ],
+        "estimated_activities_cost": 130,
+        "remaining_budget": 370
+      },
+      "limitations": ["Atrações e valores são mockados e não representam disponibilidade ou preços atuais."]
+    }
+  },
+  {
+    "name": "calculo_de_orcamento",
+    "input": {
+      "user_request": "Analise meu orçamento de 5 dias.",
+      "tool_results": {
+        "calculate_trip_budget": {
+          "ok": true,
+          "data": {
+            "days": 5,
+            "available_budget": 3000,
+            "breakdown": {"accommodation": 1200, "food": 600, "transport": 350, "activities": 500, "other": 200},
+            "total": 2850,
+            "daily_average": 570,
+            "balance": 150,
+            "classification": "dentro do orçamento",
+            "currency": "BRL"
+          }
+        }
+      }
+    },
+    "output": {
+      "answer": "O planejamento totaliza R$ 2.850, com média de R$ 570 por dia e saldo de R$ 150. Ele está dentro do orçamento disponível.",
+      "type": "budget",
+      "tools_used": ["calculate_trip_budget"],
+      "suggestions": ["Mantenha o saldo como margem para imprevistos."],
+      "data": {"total": 2850, "daily_average": 570, "balance": 150, "classification": "dentro do orçamento", "currency": "BRL"},
+      "limitations": ["O cálculo considera apenas os valores fornecidos e não consulta preços atuais."]
+    }
+  },
+  {
+    "name": "destino_sem_dados",
+    "input": {
+      "user_request": "Quero informações sobre Chapada Diamantina.",
+      "tool_results": {
+        "get_destination_information": {
+          "ok": false,
+          "data": null,
+          "error": {"code": "DESTINATION_NOT_FOUND", "message": "Destino 'Chapada Diamantina' não encontrado nos dados mockados.", "details": {}}
+        }
+      }
+    },
+    "output": {
+      "answer": "Ainda não há dados mockados suficientes sobre Chapada Diamantina no ViajaReal.",
+      "type": "general",
+      "tools_used": ["get_destination_information"],
+      "suggestions": ["Pesquise um dos destinos disponíveis no catálogo da aplicação."],
+      "data": {"error_code": "DESTINATION_NOT_FOUND", "destination": "Chapada Diamantina"},
+      "limitations": ["Não posso completar atrações, preços ou avaliações que não estejam nos dados internos."]
+    }
+  }
+]

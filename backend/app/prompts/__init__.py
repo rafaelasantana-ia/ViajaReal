@@ -1,0 +1,1 @@
+"""Prompts versionados da aplicação."""

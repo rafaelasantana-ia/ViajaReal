@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { FloatingTravelChat } from '../assistant/FloatingTravelChat';
 import { BottomNavigation, SidebarNavigation } from './BottomNavigation';
 import { Header } from './Header';
 
@@ -13,6 +14,7 @@ export function AppLayout() {
         </main>
       </div>
       <BottomNavigation />
+      <FloatingTravelChat />
     </div>
   );
 }

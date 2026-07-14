@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Imagem de destino indisponível</title>
+  <desc id="description">Ilustração local de montanhas, sol e caminho.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dff4ff"/><stop offset="1" stop-color="#f4fbff"/></linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#67c6a3"/><stop offset="1" stop-color="#23866f"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#sky)"/>
+  <circle cx="930" cy="150" r="72" fill="#ffd66b"/>
+  <path d="M0 520 290 225 530 500 720 300 1200 565v110H0Z" fill="#9dd9c1"/>
+  <path d="M0 575 370 335 610 560 810 390 1200 600v75H0Z" fill="url(#hill)"/>
+  <path d="M555 675c36-105 126-178 269-225-96 68-154 143-174 225Z" fill="#f4dfb1" opacity=".95"/>
+  <text x="58" y="92" fill="#195b50" font-family="Arial, sans-serif" font-size="36" font-weight="700">ViajaReal</text>
+  <text x="58" y="132" fill="#3d7068" font-family="Arial, sans-serif" font-size="22">Imagem local de fallback</text>
+</svg>

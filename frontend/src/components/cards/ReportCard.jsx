@@ -1,6 +1,7 @@
 import { Heart, MoreHorizontal } from 'lucide-react';
 
 export function ReportCard({ report, compact = false }) {
+  const photos = report.photos?.length ? report.photos : [{ url: report.image, name: report.destination }];
   return (
     <article className="card">
       <div className="flex gap-3">
@@ -16,7 +17,14 @@ export function ReportCard({ report, compact = false }) {
           <p className="mt-2 text-xs leading-relaxed text-slate-700">{report.text}</p>
           {!compact ? (
             <div className="mt-3 flex gap-3">
-              <img src={report.image} alt={report.destination} className="h-20 w-24 rounded-xl object-cover" />
+              <div className={`grid shrink-0 gap-1 ${photos.length > 1 ? 'grid-cols-2' : ''}`}>
+                {photos.slice(0, 4).map((photo, index) => (
+                  <div key={`${photo.url}-${index}`} className="relative">
+                    <img src={photo.url} alt={photo.name || `${report.destination} ${index + 1}`} className={`${photos.length > 1 ? 'h-16 w-16' : 'h-20 w-24'} rounded-xl object-cover`} />
+                    {index === 3 && photos.length > 4 ? <span className="absolute inset-0 grid place-items-center rounded-xl bg-slate-950/60 text-xs font-bold text-white">+{photos.length - 4}</span> : null}
+                  </div>
+                ))}
+              </div>
               <div className="flex flex-col justify-end gap-2">
                 <span className="pill bg-slate-100 text-slate-700">Gastos: {report.cost}</span>
                 <span className="pill bg-emerald-50 text-emerald-700">Segurança: {report.safety}</span>

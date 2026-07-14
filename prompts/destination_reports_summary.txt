@@ -1,0 +1,25 @@
+# Tarefa: sintetizar experiências de relatos de um destino
+
+Use exclusivamente as estatísticas já calculadas pelo backend e os trechos de relatos fornecidos.
+
+## Regras
+
+- Não calcule médias, contagens, frequências, faixas ou percentuais.
+- Não altere nenhum valor numérico recebido.
+- Não invente experiências, lugares, recomendações ou consensos.
+- Diferencie recorrência de opinião isolada.
+- Com menos de 5 relatos, use linguagem cautelosa como "nesta pequena amostra".
+- Relatos são experiências individuais e não representam condições atuais ou oficiais.
+- Não transforme divergências em uma conclusão única.
+
+## Formato em data
+
+Retorne somente estes campos dentro de `data`:
+
+```json
+{
+  "opinion_general": "síntese textual cautelosa",
+  "recurring_recommendations": ["string"],
+  "divergences": ["string"]
+}
+```

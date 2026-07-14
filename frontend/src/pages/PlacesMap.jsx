@@ -3,12 +3,23 @@ import { useState } from 'react';
 import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet';
 import { PlaceCard } from '../components/cards/PlaceCard';
 import { recommendPlaces } from '../services/aiService';
+import { getActiveTrip } from '../services/tripService';
 
 export function PlacesMap() {
+  const trip = getActiveTrip();
   const allPlaces = recommendPlaces();
   const [view, setView] = useState('Mapa');
   const [gastronomyOnly, setGastronomyOnly] = useState(false);
   const places = gastronomyOnly ? allPlaces.filter((place) => place.type === 'Gastronomia') : allPlaces;
+
+  if (!trip) {
+    return (
+      <section className="card space-y-3">
+        <h1 className="text-lg font-extrabold text-slate-950">Nenhum mapa selecionado</h1>
+        <p className="text-sm text-slate-600">Crie um planejamento para visualizar os lugares da viagem no mapa.</p>
+      </section>
+    );
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
@@ -54,7 +65,7 @@ export function PlacesMap() {
 
         <div className="card space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-extrabold text-slate-950">Dia 1 - Tóquio</h2>
+            <h2 className="text-sm font-extrabold text-slate-950">Dia 1 - {trip.destination}</h2>
             {gastronomyOnly ? <span className="pill">Gastronomia</span> : null}
           </div>
           {places.map((place) => <PlaceCard key={place.id} place={place} />)}

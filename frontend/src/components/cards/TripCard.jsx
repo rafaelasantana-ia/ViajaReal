@@ -2,6 +2,18 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function TripCard({ trip }) {
+  if (!trip) {
+    return (
+      <Link to="/planner" className="card flex min-h-28 items-center justify-between gap-3 border border-dashed border-slate-200">
+        <div>
+          <h3 className="font-bold text-slate-950">Nenhuma viagem selecionada</h3>
+          <p className="mt-1 text-xs text-slate-500">Escolha um destino para começar seu planejamento.</p>
+        </div>
+        <ArrowRight size={18} className="shrink-0 text-brand-600" />
+      </Link>
+    );
+  }
+
   return (
     <Link to="/planner" className="card flex gap-3">
       <img src={trip.cover} alt={trip.title} className="h-24 w-24 rounded-xl object-cover" />

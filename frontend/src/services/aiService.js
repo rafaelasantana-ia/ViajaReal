@@ -1,39 +1,79 @@
-import { activeTrip } from '../data/mockTrips';
 import { places } from '../data/mockPlaces';
-import { estimateTripCost } from './costService';
-import { summarizeReports } from './communityService';
-
-export const MOCK_MODE = true;
+import { post, postApi } from './apiClient';
 
 export function recommendPlaces() {
   // Futuro: substituir por chamada para API real de IA/recomendação.
   return places;
 }
 
-export function generateItinerary({ destination = 'Japão', days = 12, budget = 'R$ 8.000', style = 'Confortável' } = {}) {
-  // Futuro: chamar endpoint real de IA com destino, dias, orçamento e estilo do viajante.
-  const estimatedCost = estimateTripCost({ days, style });
-  const reportsSummary = summarizeReports();
-
-  return {
-    destination,
-    days,
-    budget,
-    style,
-    estimatedCost,
-    safety: reportsSummary.averageSafety,
-    bestSeason: 'Mar - Mai',
-    summary: `Preparamos um roteiro equilibrado para você conhecer o melhor do ${destination} com conforto e experiências autênticas.`,
-    blocks: [
-      { period: 'Dia 1-3', city: 'Tóquio', description: 'Explorar os principais pontos da capital', image: activeTrip.cover },
-      { period: 'Dia 4-6', city: 'Kyoto', description: 'Cultura, templos e tradições', image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?auto=format&fit=crop&w=400&q=80' },
-      { period: 'Dia 7-8', city: 'Osaka', description: 'Gastronomia e vida noturna', image: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=400&q=80' },
-      { period: 'Dia 9-10', city: 'Hakone', description: 'Natureza e fontes termais', image: 'https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?auto=format&fit=crop&w=400&q=80' },
-      { period: 'Dia 11-12', city: 'Tóquio', description: 'Compras e despedida', image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=400&q=80' },
-    ],
-  };
+export function planTripWithAI(payload) {
+  return postApi('/api/ai/plan-trip', {
+    destination: payload.destination,
+    days: Number(payload.days),
+    budget: Number(payload.budget),
+    travel_type: payload.travelType,
+    company: payload.company,
+    interests: payload.interests,
+    comfort_level: payload.comfortLevel,
+    approximate_date: payload.approximateDate,
+    observations: payload.observations?.trim() || null,
+  });
 }
 
-export function getAssistantLoadingMessages() {
-  return ['Analisando relatos reais de viajantes...', 'Calculando melhor roteiro...', 'Estimando custos...'];
+export function getChatSessionId() {
+  let sessionId = sessionStorage.getItem('viajareal-chat-session');
+  if (!sessionId) {
+    sessionId = globalThis.crypto?.randomUUID?.() || `web-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    sessionStorage.setItem('viajareal-chat-session', sessionId);
+  }
+  return sessionId;
+}
+
+export function chatWithAssistant({ message, destination, history = [], currentPage = '/', formData = {} }) {
+  return postApi('/api/ai/chat', {
+    message,
+    session_id: getChatSessionId(),
+    conversation_history: history,
+    context: {
+      current_page: currentPage,
+      selected_destination: destination || null,
+      form_data: formData,
+    },
+  }).then((response) => ({ ...response, message: response.answer }));
+}
+
+export function improveTravelReport(report) {
+  return post('/ai/reports/improve', report);
+}
+
+export function improveReportWithAI({ destination, originalText, tripType, expenses, rating }) {
+  return postApi('/api/ai/improve-report', {
+    destination,
+    original_text: originalText,
+    trip_type: tripType || null,
+    expenses,
+    rating: rating === '' || rating == null ? null : Number(rating),
+  });
+}
+
+export function summarizeTravelReports(destination, reports = []) {
+  return post('/ai/reports/summary', {
+    destination,
+    reports: reports.map((report) => ({
+      destination: report.destination || destination,
+      title: report.title || `Relato de ${report.author || 'viajante'}`,
+      text: report.text,
+      travel_type: report.travelType || null,
+      cost: Number(String(report.cost || '').replace(/\D/g, '')) || null,
+      safety: report.safety || null,
+    })),
+  });
+}
+
+export function summarizeDestination(destination, interests = []) {
+  return post('/ai/destinations/summary', { destination, interests });
+}
+
+export function summarizeDestinationReports(destination) {
+  return postApi('/api/ai/summarize-destination-reports', { destination });
 }

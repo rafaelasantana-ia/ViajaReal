@@ -6,16 +6,17 @@ import { getTripDay } from '../services/tripService';
 
 export function DayTimeline() {
   const initialDay = getTripDay('day-2');
-  const [stops, setStops] = useState(initialDay.stops);
+  const [stops, setStops] = useState(initialDay?.stops || []);
   const [notice, setNotice] = useState('');
 
   const handleAddStop = () => {
+    if (!initialDay) return;
     setStops((current) => [
       ...current,
       {
         id: `timeline-stop-${Date.now()}`,
         time: '20:45',
-        title: 'Café noturno em Kyoto',
+        title: 'Nova parada',
         category: 'Gastronomia',
         description: 'Parada mockada adicionada pela timeline.',
         image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=300&q=80',
@@ -23,6 +24,15 @@ export function DayTimeline() {
     ]);
     setNotice('Parada adicionada na timeline mockada.');
   };
+
+  if (!initialDay) {
+    return (
+      <section className="card space-y-3">
+        <h1 className="text-lg font-extrabold text-slate-950">Nenhum dia selecionado</h1>
+        <p className="text-sm text-slate-600">Crie um planejamento para visualizar a timeline da viagem.</p>
+      </section>
+    );
+  }
 
   return (
     <div className="space-y-5">

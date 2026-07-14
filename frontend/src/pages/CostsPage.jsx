@@ -3,8 +3,10 @@ import { useMemo, useState } from 'react';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { CostCard } from '../components/cards/CostCard';
 import { getCostSummary } from '../services/costService';
+import { getActiveTrip } from '../services/tripService';
 
 export function CostsPage() {
+  const trip = getActiveTrip();
   const initialCosts = getCostSummary();
   const [categories, setCategories] = useState(initialCosts.categories);
   const [daily, setDaily] = useState(initialCosts.daily);
@@ -18,6 +20,15 @@ export function CostsPage() {
     );
     setDaily((current) => current.map((item, index) => index === current.length - 1 ? { ...item, value: item.value + 180 } : item));
   };
+
+  if (!trip) {
+    return (
+      <section className="card space-y-3">
+        <h1 className="text-lg font-extrabold text-slate-950">Nenhum orçamento selecionado</h1>
+        <p className="text-sm text-slate-600">Crie um planejamento para acompanhar os custos da viagem.</p>
+      </section>
+    );
+  }
 
   return (
     <div className="space-y-5">

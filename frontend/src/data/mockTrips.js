@@ -1,4 +1,4 @@
-export const activeTrip = {
+export const japanTripMock = {
   id: 'trip-japao-2026',
   title: 'Viagem para Japão',
   destinationId: 'japao',
@@ -45,3 +45,6 @@ export const activeTrip = {
     { id: 'day-5', label: 'Dia 5', date: '16/04', city: 'Osaka', stops: [] },
   ],
 };
+
+// Nenhuma viagem deve aparecer pré-selecionada ao abrir a aplicação.
+export const activeTrip = null;

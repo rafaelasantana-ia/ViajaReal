@@ -6,6 +6,13 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from app.api.router import api_router
+from app.api.routes.main_chat import router as main_chat_router
+from app.api.routes.improve_report import router as improve_report_router
+from app.api.routes.destination_reports_summary import router as destination_reports_summary_router
+from app.api.routes.plan_trip import router as plan_trip_router
+from app.api.routes.destination_external import router as destination_external_router
+from app.core.config import get_settings
 from app.services.expenses_service import calculate_trip_expenses
 from app.services.external_info_service import get_public_destination_info
 from app.services.maps_service import build_map_markers, get_mock_location_coordinates
@@ -22,13 +29,22 @@ app = FastAPI(
     version="1.0.0",
 )
 
+settings = get_settings()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=list(settings.frontend_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(api_router)
+app.include_router(destination_reports_summary_router)
+app.include_router(improve_report_router)
+app.include_router(main_chat_router)
+app.include_router(plan_trip_router)
+app.include_router(destination_external_router)
 
 
 class DestinationBase(BaseModel):

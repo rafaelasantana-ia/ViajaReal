@@ -1,6 +1,21 @@
 """Exemplos de dados mockados para simular busca de destinos, relatos e cadastros futuros."""
 
 MOCK_DESTINATIONS = {
+    "japão": {
+        "name": "Japão",
+        "country": "Japão",
+        "region": "Ásia",
+        "summary": "O Japão combina cidades conectadas, cultura, gastronomia e natureza em roteiros variados.",
+        "climate": "Primavera e outono costumam ter temperaturas mais amenas; confirme a previsão antes da viagem.",
+        "events": ["Festivais sazonais", "Temporada de florescimento"],
+        "attractions": ["Tóquio", "Kyoto", "Osaka", "Hakone"],
+        "local_transport": "Rede extensa de metrô e trens, com regras e tarifas que variam por região.",
+        "safety": "Alta nos dados mockados; consulte fontes oficiais atualizadas.",
+        "price_average": "R$ 700/dia",
+        "recent_news": [],
+        "recommended_places": ["Tóquio", "Kyoto", "Osaka", "Hakone"],
+        "ideal_traveler": "Viajantes interessados em cultura, gastronomia, tecnologia e transporte público.",
+    },
     "lisboa": {
         "name": "Lisboa",
         "country": "Portugal",
@@ -49,6 +64,18 @@ MOCK_DESTINATIONS = {
 }
 
 MOCK_USER_REPORTS = [
+    {
+        "title": "Roteiro urbano no Japão",
+        "destination": "Japão",
+        "travel_type": "casal",
+        "budget_level": "médio",
+        "duration_days": 10,
+        "interests": ["cultura", "gastronomia"],
+        "rating": 4.8,
+        "cost_breakdown": {"food": 1800, "transport": 1200, "lodging": 3400, "activities": 900, "shopping": 400, "others": 300},
+        "summary": "Transporte eficiente e boa variedade de atividades, com atenção ao custo de hospedagem.",
+        "locations": ["Tóquio", "Kyoto", "Osaka"],
+    },
     {
         "title": "Fim de semana em Lisboa",
         "destination": "Lisboa",

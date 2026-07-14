@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
-import { AssistantResult } from './pages/AssistantResult';
 import { CommunityReports } from './pages/CommunityReports';
 import { CostsPage } from './pages/CostsPage';
 import { Dashboard } from './pages/Dashboard';
@@ -8,7 +7,6 @@ import { DayTimeline } from './pages/DayTimeline';
 import { DestinationPage } from './pages/DestinationPage';
 import { PlacesMap } from './pages/PlacesMap';
 import { ProfileSettings } from './pages/ProfileSettings';
-import { TravelAssistant } from './pages/TravelAssistant';
 import { TripPlanner } from './pages/TripPlanner';
 
 function App() {
@@ -22,8 +20,6 @@ function App() {
         <Route path="places" element={<PlacesMap />} />
         <Route path="costs" element={<CostsPage />} />
         <Route path="community" element={<CommunityReports />} />
-        <Route path="assistant" element={<TravelAssistant />} />
-        <Route path="assistant/result" element={<AssistantResult />} />
         <Route path="profile" element={<ProfileSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

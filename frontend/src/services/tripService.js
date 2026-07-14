@@ -5,9 +5,9 @@ export function getActiveTrip() {
 }
 
 export function getTripDay(dayId = 'day-1') {
-  return activeTrip.days.find((day) => day.id === dayId) || activeTrip.days[0];
+  return activeTrip?.days.find((day) => day.id === dayId) || activeTrip?.days[0] || null;
 }
 
 export function getTripDays() {
-  return activeTrip.days;
+  return activeTrip?.days || [];
 }
