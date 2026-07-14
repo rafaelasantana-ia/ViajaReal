@@ -199,8 +199,7 @@ O backend desambigua destinos conhecidos, por exemplo `Bonito, Mato Grosso do Su
 ViajaReal/
 ├── prompts/
 ├── docs/
-│   ├── security.md
-│   └── presentation.md
+│   └── security.md
 ├── backend/
 │   ├── app/api/routes/
 │   ├── app/data/
@@ -275,10 +274,6 @@ O workflow `.github/workflows/ci.yml` executa testes e build em pushes e pull re
 - o deploy frontend-only precisa de um backend publicado para usar IA;
 - não há autenticação, autorização por usuário, RAG ou múltiplos agentes;
 - resultados de IA devem ser revisados antes de decisões de viagem.
-
-## Apresentação
-
-O roteiro de três minutos e respostas para perguntas prováveis estão em `docs/presentation.md`.
 
 ## Repositório
 
