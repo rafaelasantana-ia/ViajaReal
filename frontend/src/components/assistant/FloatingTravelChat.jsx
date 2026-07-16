@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { activeTrip } from '../../data/mockTrips';
 import { chatWithAssistant } from '../../services/aiService';
 import { applyPendingAnswer, clearChatState, loadChatState, saveChatState, toConversationHistory } from '../../services/chatSessionService';
+import { getActiveTrip } from '../../services/tripService';
 import { ChatButton } from './ChatButton';
 import { ChatWindow } from './ChatWindow';
 
@@ -11,7 +11,7 @@ const makeId = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.
 function destinationForPage(location) {
   const selectedDestination = new URLSearchParams(location.search).get('destination');
   if (selectedDestination) return selectedDestination;
-  return ['/destination', '/planner', '/timeline', '/places', '/costs', '/community'].includes(location.pathname) ? activeTrip?.destination || null : null;
+  return ['/destination', '/planner', '/timeline', '/places', '/costs', '/community'].includes(location.pathname) ? getActiveTrip()?.destination || null : null;
 }
 
 export function FloatingTravelChat() {

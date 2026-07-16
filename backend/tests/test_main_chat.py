@@ -91,11 +91,40 @@ class MainChatServiceTest(unittest.TestCase):
             message="Buscar relatos",
             session_id="session-reports-suggestion",
             conversation_history=[],
-            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {}},
+            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {"report_focus": "custos e segurança"}},
         )
         response = MainChatService().answer(request)
         self.assertEqual(response.type, "reports")
         self.assertEqual(response.tools_used, ["search_destination_reports"])
+
+    def test_report_search_continues_by_asking_destination_then_focus(self):
+        first = MainChatService().answer(MainChatRequest(
+            message="Buscar relatos",
+            session_id="session-report-follow-up-1",
+            conversation_history=[],
+            context={"current_page": "/", "form_data": {}},
+        ))
+        self.assertEqual(first.data["missing_information"], "destination")
+        self.assertIn("destino", first.answer.lower())
+
+        second = MainChatService().answer(MainChatRequest(
+            message="Bonito",
+            session_id="session-report-follow-up-2",
+            conversation_history=[],
+            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {"intent": "reports", "destination": "Bonito"}},
+        ))
+        self.assertEqual(second.data["missing_information"], "report_focus")
+        self.assertIn("custos", second.answer.lower())
+        self.assertIn("segurança", second.answer.lower())
+
+        third = MainChatService().answer(MainChatRequest(
+            message="Quero saber sobre segurança e passeios",
+            session_id="session-report-follow-up-3",
+            conversation_history=[],
+            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {"intent": "reports", "destination": "Bonito", "report_focus": "segurança e passeios"}},
+        ))
+        self.assertEqual(third.type, "reports")
+        self.assertEqual(third.tools_used, ["search_destination_reports"])
 
     def test_general_message_does_not_expose_unrelated_tools_to_model(self):
         request = MainChatRequest(
@@ -127,7 +156,7 @@ class MainChatServiceTest(unittest.TestCase):
             message="Buscar relatos",
             session_id="session-ollama-fallback",
             conversation_history=[],
-            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {}},
+            context={"current_page": "/", "selected_destination": "Bonito", "form_data": {"report_focus": "visão geral"}},
         )
         with patch("app.services.ai_service.AIService._run_real", side_effect=ProviderTimeoutError("tempo limite")):
             response = service.answer(request)
@@ -146,7 +175,7 @@ class MainChatEndpointTest(unittest.TestCase):
                 "message": "Resuma os relatos",
                 "session_id": "web-test-1",
                 "conversation_history": [],
-                "context": {"current_page": "/community", "selected_destination": "Salvador", "form_data": {}},
+                "context": {"current_page": "/community", "selected_destination": "Salvador", "form_data": {"report_focus": "visão geral"}},
             },
         )
         self.assertEqual(response.status_code, 200)

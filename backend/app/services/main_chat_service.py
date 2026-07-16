@@ -26,6 +26,8 @@ class MainChatService:
         intent = requested_intent if requested_intent in PUBLIC_TYPES else self._identify_intent(request.message, request.context.current_page)
         destination = form_data.get("destination") or request.context.selected_destination or self._destination_from_message(request.message)
         tool_plan, missing = self._mock_tool_plan(intent, request.message, destination, form_data)
+        if missing:
+            return self._missing_information_response(intent, missing, destination)
         payload = {
             "message": request.message,
             "intent": intent,
@@ -37,7 +39,7 @@ class MainChatService:
         planned_tools = list(dict.fromkeys(name for name, _arguments in tool_plan))
         # O modelo escolhe somente entre tools compatíveis com a intenção já
         # validada no backend. Isso evita chamadas aleatórias em mensagens gerais.
-        allowed_tools = [] if missing or intent == "report_improvement" else planned_tools
+        allowed_tools = [] if intent == "report_improvement" else planned_tools
         internal = self.ai_service.generate(
             feature="chat",
             messages=build_messages(CHAT_PROMPT, payload, history),
@@ -100,6 +102,28 @@ class MainChatService:
         )
 
     @staticmethod
+    def _missing_information_response(intent: str, missing: str, destination: str | None) -> MainChatResponse:
+        questions = {
+            ("reports", "destination"): "Sobre qual destino ou local você quer buscar relatos?",
+            ("reports", "report_focus"): f"O que você quer saber nos relatos sobre {destination}: custos, segurança, hospedagem, passeios ou outra informação?",
+            ("trip_plan", "destination"): "Para qual destino você quer planejar a viagem?",
+            ("trip_plan", "days"): "Quantos dias você pretende ficar nessa viagem?",
+            ("trip_plan", "available_budget"): "Qual é o orçamento disponível para essa viagem?",
+            ("comparison", "first_destination"): "Qual é o primeiro destino que você quer comparar?",
+            ("comparison", "second_destination"): "Qual é o segundo destino que você quer comparar?",
+            ("report_improvement", "report_text"): "Qual texto de relato você quer melhorar?",
+        }
+        answer = questions.get((intent, missing), "Qual informação falta para eu continuar?")
+        return MainChatResponse(
+            answer=answer,
+            type=intent,
+            tools_used=[],
+            suggestions=[],
+            data={"missing_information": missing},
+            limitations=[],
+        )
+
+    @staticmethod
     def _identify_intent(message: str, current_page: str | None) -> str:
         text = message.lower()
         page = (current_page or "").lower()
@@ -111,7 +135,7 @@ class MainChatService:
             return "budget"
         if any(term in text for term in ("planejar", "roteiro", "itinerário", "itinerario")) or "planner" in page:
             return "trip_plan"
-        if any(term in text for term in ("buscar relatos", "pesquisar relatos", "resumir relatos", "resumo dos relatos", "analisar relatos", "o que os viajantes")) or "community" in page:
+        if any(term in text for term in ("relato", "relatos", "experiência de viajante", "experiencias de viajantes", "o que os viajantes")) or "community" in page:
             return "reports"
         if any(term in text for term in ("resumir destino", "resumo do destino", "informações do destino", "informacoes do destino")) or "destination" in page:
             return "destination_summary"
@@ -138,6 +162,8 @@ class MainChatService:
         if intent in {"reports", "destination_summary", "trip_plan"} and not destination:
             return [], "destination"
         if intent == "reports":
+            if not str(form.get("report_focus") or "").strip():
+                return [], "report_focus"
             return [("search_destination_reports", {"destination": destination, "travel_type": form.get("travel_type"), "minimum_rating": cls._number(form, "minimum_rating"), "limit": int(cls._number(form, "limit", 10))})], None
         if intent == "destination_summary":
             return [("get_destination_information", {"destination": destination}), ("search_destination_reports", {"destination": destination, "limit": 5})], None
