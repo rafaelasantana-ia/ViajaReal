@@ -28,6 +28,8 @@ class MainChatService:
         tool_plan, missing = self._mock_tool_plan(intent, request.message, destination, form_data)
         if missing:
             return self._missing_information_response(intent, missing, destination)
+        if intent == "trip_plan":
+            return self._generate_required_trip_plan(tool_plan)
         payload = {
             "message": request.message,
             "intent": intent,
@@ -109,6 +111,7 @@ class MainChatService:
             ("trip_plan", "destination"): "Para qual destino você quer planejar a viagem?",
             ("trip_plan", "days"): "Quantos dias você pretende ficar nessa viagem?",
             ("trip_plan", "available_budget"): "Qual é o orçamento disponível para essa viagem?",
+            ("trip_plan", "interests"): "Quais são seus principais interesses na viagem, como natureza, gastronomia, cultura ou aventura?",
             ("comparison", "first_destination"): "Qual é o primeiro destino que você quer comparar?",
             ("comparison", "second_destination"): "Qual é o segundo destino que você quer comparar?",
             ("report_improvement", "report_text"): "Qual texto de relato você quer melhorar?",
@@ -121,6 +124,33 @@ class MainChatService:
             suggestions=[],
             data={"missing_information": missing},
             limitations=[],
+        )
+
+    def _generate_required_trip_plan(self, tool_plan: List[Tuple[str, Dict[str, Any]]]) -> MainChatResponse:
+        results, used = self.ai_service.execute_required_tools(tool_plan)
+        itinerary_result = results.get("generate_itinerary_base") or {}
+        itinerary = itinerary_result.get("data") if itinerary_result.get("ok") else None
+        live_result = results.get("get_live_destination_context") or {}
+        if not isinstance(itinerary, dict):
+            error = itinerary_result.get("error") or {}
+            return MainChatResponse(
+                answer=error.get("message") or "Não foi possível gerar um roteiro para esse destino com os dados disponíveis.",
+                type="trip_plan",
+                tools_used=[tool.name for tool in used],
+                suggestions=["Escolher outro destino", "Alterar os interesses"],
+                data={"error": error},
+                limitations=["O roteiro não foi inventado porque faltam dados internos compatíveis."],
+            )
+        return MainChatResponse(
+            answer=f"Montei um roteiro-base de {itinerary['days']} dias para {itinerary['destination']['name']}.",
+            type="trip_plan",
+            tools_used=[tool.name for tool in used],
+            suggestions=["Revisar as atividades", "Abrir o planejador"],
+            data={
+                "itinerary_base": itinerary,
+                "live_context": live_result.get("data") if live_result.get("ok") else None,
+            },
+            limitations=[itinerary["message"]] if itinerary.get("insufficient_data") else [],
         )
 
     @staticmethod
@@ -174,6 +204,9 @@ class MainChatService:
                 return [], "days"
             if budget is None:
                 return [], "available_budget"
+            interests = form.get("interests")
+            if not isinstance(interests, list) or not interests:
+                return [], "interests"
             return [("get_live_destination_context", {"destination": destination, "travel_date": form.get("travel_date") or form.get("approximate_date")}), ("get_destination_information", {"destination": destination}), ("generate_itinerary_base", {"destination": destination, "days": int(days), "interests": form.get("interests") or [], "available_budget": float(budget)})], None
         if intent == "budget":
             required = ("days", "available_budget", "accommodation", "food", "transport", "activities", "other")

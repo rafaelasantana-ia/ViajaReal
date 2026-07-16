@@ -86,6 +86,45 @@ class MainChatServiceTest(unittest.TestCase):
         self.assertEqual(response.data["missing_information"], "available_budget")
         self.assertEqual(response.answer.count("?"), 1)
 
+    def test_trip_plan_collects_interests_then_generates_itinerary(self):
+        missing_interests = MainChatService().answer(MainChatRequest(
+            message="R$ 5.000",
+            session_id="session-plan-interests",
+            conversation_history=[],
+            context={
+                "current_page": "/",
+                "selected_destination": "Bonito",
+                "form_data": {
+                    "intent": "trip_plan",
+                    "destination": "Bonito",
+                    "days": 5,
+                    "available_budget": 5000,
+                },
+            },
+        ))
+        self.assertEqual(missing_interests.data["missing_information"], "interests")
+        self.assertIn("interesses", missing_interests.answer.lower())
+
+        response = MainChatService().answer(MainChatRequest(
+            message="natureza e aventura",
+            session_id="session-plan-generate",
+            conversation_history=[],
+            context={
+                "current_page": "/",
+                "selected_destination": "Bonito",
+                "form_data": {
+                    "intent": "trip_plan",
+                    "destination": "Bonito",
+                    "days": 5,
+                    "available_budget": 5000,
+                    "interests": ["natureza", "aventura"],
+                },
+            },
+        ))
+        self.assertEqual(response.type, "trip_plan")
+        self.assertEqual(response.tools_used, ["get_live_destination_context", "get_destination_information", "generate_itinerary_base"])
+        self.assertEqual(response.data["itinerary_base"]["destination"]["name"], "Bonito")
+
     def test_quick_report_suggestion_selects_report_tool(self):
         request = MainChatRequest(
             message="Buscar relatos",

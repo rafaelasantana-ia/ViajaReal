@@ -41,6 +41,12 @@ export function toConversationHistory(messages) {
 
 export function applyPendingAnswer(formData, pendingField, value) {
   if (!pendingField) return formData;
+  if (pendingField === 'interests') {
+    return {
+      ...formData,
+      interests: value.split(/[,;]|\be\b/gi).map((item) => item.trim()).filter(Boolean),
+    };
+  }
   const numericFields = new Set(['days', 'available_budget', 'accommodation', 'food', 'transport', 'activities', 'other', 'budget']);
   const normalized = numericFields.has(pendingField)
     ? Number(String(value).replace(/[^\d,.-]/g, '').replace(',', '.'))
